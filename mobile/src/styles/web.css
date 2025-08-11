@@ -1,0 +1,15 @@
+/* Estilos básicos para web */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  height: 100%;
+}
+
+/* Solo estilos básicos sin forzar scroll */
+[data-rn-root] {
+  height: 100%;
+}

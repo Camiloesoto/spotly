@@ -1,0 +1,48 @@
+{
+  "name": "spotly",
+  "version": "1.0.0",
+  "description": "Plataforma integral para gastronomía, socialización y entretenimiento",
+  "main": "index.js",
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:mobile": "cd mobile && npm run web",
+    "dev:admin": "cd spotly-admin && npm run dev",
+    "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:mobile\" \"npm run dev:admin\"",
+    "install:all": "npm install && cd backend && npm install && cd ../mobile && npm install && cd ../spotly-admin && npm install",
+    "build:backend": "cd backend && npm run build",
+    "build:mobile": "cd mobile && npm run build",
+    "build:admin": "cd spotly-admin && npm run build",
+    "build:all": "npm run build:backend && npm run build:mobile && npm run build:admin",
+    "start:backend": "cd backend && npm start",
+    "test:backend": "cd backend && npm test",
+    "migrate": "cd backend && npm run migrate"
+  },
+  "keywords": [
+    "gastronomía",
+    "restaurantes",
+    "reservas",
+    "social",
+    "entretenimiento",
+    "react-native",
+    "nodejs",
+    "postgresql"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "backend",
+    "mobile",
+    "spotly-admin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tu-usuario/spotly.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tu-usuario/spotly/issues"
+  },
+  "homepage": "https://github.com/tu-usuario/spotly#readme"
+}
