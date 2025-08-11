@@ -44,5 +44,8 @@
   "bugs": {
     "url": "https://github.com/tu-usuario/spotly/issues"
   },
-  "homepage": "https://github.com/tu-usuario/spotly#readme"
+  "homepage": "https://github.com/tu-usuario/spotly#readme",
+  "dependencies": {
+    "axios": "^1.11.0"
+  }
 }

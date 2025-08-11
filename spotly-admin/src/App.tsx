@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './providers/AuthProvider';
 import { useAuth } from './hooks/useAuth';
 import LoginForm from './components/LoginForm';
+import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
+import LugaresPage from './components/LugaresPage';
 
 // Componente para proteger rutas
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -36,14 +38,31 @@ const AppContent: React.FC = () => {
           isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginForm />
         } 
       />
+      
+      {/* Rutas protegidas con Layout */}
       <Route 
         path="/dashboard" 
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <Layout>
+              <Dashboard />
+            </Layout>
           </ProtectedRoute>
         } 
       />
+      
+      <Route 
+        path="/lugares" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <LugaresPage />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Ruta raíz redirige al dashboard */}
       <Route 
         path="/" 
         element={<Navigate to="/dashboard" replace />} 
