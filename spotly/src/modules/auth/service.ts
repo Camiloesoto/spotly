@@ -11,11 +11,15 @@ import type {
 const AUTH_BASE = "/auth";
 
 export async function registerUser(payload: RegisterPayload) {
-  return apiClient.post<Session>(`${AUTH_BASE}/register`, payload);
+  const session = await apiClient.post<Session>(`${AUTH_BASE}/register`, payload);
+  useAuthStore.getState().setSession(mapSessionToStore(session.user), session.accessToken);
+  return session;
 }
 
 export async function registerLocal(payload: LocalRegisterPayload) {
-  return apiClient.post<Session>(`${AUTH_BASE}/register/local`, payload);
+  const session = await apiClient.post<Session>(`${AUTH_BASE}/register/local`, payload);
+  useAuthStore.getState().setSession(mapSessionToStore(session.user), session.accessToken);
+  return session;
 }
 
 export async function login(payload: LoginPayload) {
