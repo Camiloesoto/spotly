@@ -33,10 +33,7 @@ const registerSchema = z
       .regex(/[A-Z]/, "Incluye al menos una mayúscula")
       .regex(/[0-9]/, "Incluye al menos un número"),
     confirmPassword: z.string().min(1, "Confirma tu contraseña"),
-    role: z.enum(["user", "owner"], {
-      required_error: "Selecciona un tipo de cuenta",
-      invalid_type_error: "Selecciona un tipo de cuenta",
-    }),
+    role: z.enum(["user", "owner"]),
     acceptTerms: z
       .boolean()
       .refine((value) => value, "Debes aceptar los términos y condiciones"),
