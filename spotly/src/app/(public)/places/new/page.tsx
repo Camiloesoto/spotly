@@ -16,12 +16,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 
 import { useRegisterLocalMutation } from "@/modules/auth/hooks";
 import type { LocalRegisterPayload } from "@/modules/auth/types";
+import { useAuthStore } from "@/lib/store/auth-store";
 
 const DAYS_OF_WEEK = [
   { value: "monday", label: "Lunes" },
@@ -87,6 +88,15 @@ type RegisterLocalFormValues = z.infer<typeof registerLocalSchema>;
 export default function RegisterLocalPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+  const user = useAuthStore((state) => state.user);
+  const status = useAuthStore((state) => state.status);
+
+  // Proteger la ruta: solo usuarios autenticados pueden registrar locales
+  useEffect(() => {
+    if (status === "idle" || (status !== "loading" && !user)) {
+      router.push("/login?redirect=/places/new");
+    }
+  }, [status, user, router]);
 
   const {
     register,

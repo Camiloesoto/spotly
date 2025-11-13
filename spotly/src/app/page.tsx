@@ -13,24 +13,12 @@ export default function Home() {
         <p className="mt-6 text-lg text-slate-300">
           Seki te ayuda a encontrar restaurantes, bares y discotecas ideales según zona, presupuesto, tipo de música y con quién vas. Reserva, pre-ordena y divide la cuenta con tus amigos.
         </p>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-10">
           <Link
-            href="/auth/login"
-            className="rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-400"
+            href="/places"
+            className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-8 py-3 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-400"
           >
-            Iniciar sesión
-          </Link>
-          <Link
-            href="/auth/register"
-            className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-emerald-300 hover:text-emerald-300"
-          >
-            Crear cuenta
-          </Link>
-          <Link
-            href="/places/new"
-            className="rounded-full border border-emerald-400/50 bg-emerald-500/10 px-6 py-3 text-sm font-semibold text-emerald-300 transition hover:border-emerald-300 hover:bg-emerald-500/20"
-          >
-            Registrar mi local
+            Explorar lugares
           </Link>
         </div>
       </section>

@@ -3,8 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Loader2, Lock, LogIn, Mail, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -20,10 +20,25 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+      </main>
+    }>
+      <LoginPageContent />
+    </Suspense>
+  );
+}
+
+function LoginPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const loginMutation = useLoginMutation();
   const oauthMutation = useOAuthMutation();
   const [serverError, setServerError] = useState<string | null>(null);
+  
+  const redirectTo = searchParams.get("redirect") || null;
 
   const {
     register,
@@ -45,7 +60,7 @@ export default function LoginPage() {
         email: values.email,
         password: values.password,
       });
-      redirectByRole(session, router);
+      redirectByRole(session, router, redirectTo);
     } catch (error) {
       const message =
         error instanceof Error
@@ -152,7 +167,7 @@ export default function LoginPage() {
                 Recordarme 30 días
               </label>
               <Link
-                href="/auth/forgot-password"
+                href="/forgot-password"
                 className="text-sky-200 underline-offset-4 hover:underline"
               >
                 Recuperar contraseña
@@ -207,7 +222,7 @@ export default function LoginPage() {
             <p className="text-sm text-slate-300">
               ¿Aún no tienes cuenta?{" "}
               <Link
-                href="/auth/register"
+                href="/register"
                 className="text-sky-200 underline-offset-4 hover:underline"
               >
                 Regístrate gratis
@@ -220,7 +235,18 @@ export default function LoginPage() {
   );
 }
 
-function redirectByRole(session: Session, router: ReturnType<typeof useRouter>) {
+function redirectByRole(
+  session: Session,
+  router: ReturnType<typeof useRouter>,
+  redirectTo?: string | null
+) {
+  // Si hay un redirect específico, usarlo
+  if (redirectTo) {
+    router.push(redirectTo);
+    return;
+  }
+
+  // Si no, redirigir según el rol
   const role = session.user.role;
   if (role === "owner") {
     router.push("/dashboard/owner");
