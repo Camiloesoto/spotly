@@ -4,10 +4,12 @@ import type { PlaceDetail, PlaceFilters, PlaceListResponse, PlaceSummary } from 
 
 const PLACES_BASE = "/places";
 // Usar mock data si no hay API_URL configurada o si está explícitamente habilitado
+// En desarrollo, siempre usar mock data a menos que se especifique lo contrario
 const USE_MOCK_DATA =
   process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true" ||
   !process.env.NEXT_PUBLIC_API_URL ||
-  process.env.NEXT_PUBLIC_API_URL === "http://localhost:3333/api/v1";
+  process.env.NEXT_PUBLIC_API_URL === "http://localhost:3333/api/v1" ||
+  process.env.NODE_ENV === "development";
 
 export async function listPlaces(filters: PlaceFilters = {}) {
   if (USE_MOCK_DATA) {
