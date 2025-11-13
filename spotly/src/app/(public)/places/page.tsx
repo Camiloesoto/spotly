@@ -37,12 +37,23 @@ export default function PlacesPage() {
   return (
     <main className="mx-auto min-h-screen w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-8 space-y-3">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Descubre lugares increíbles
-        </h1>
-        <p className="text-base text-slate-600 sm:text-lg">
-          Explora restaurantes, bares y discotecas cercanas. Encuentra tu próximo plan perfecto.
-        </p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              Descubre lugares increíbles
+            </h1>
+            <p className="mt-2 text-base text-slate-600 sm:text-lg">
+              Explora restaurantes, bares y discotecas cercanas. Encuentra tu próximo plan perfecto.
+            </p>
+          </div>
+          <Link
+            href="/places/new"
+            className="flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2"
+          >
+            <UtensilsCrossed className="h-4 w-4" />
+            Registrar mi local
+          </Link>
+        </div>
       </header>
 
       <section className="mb-8 space-y-4">

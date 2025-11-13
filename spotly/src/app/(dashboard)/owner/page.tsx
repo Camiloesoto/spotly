@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { Building2 } from "lucide-react";
+
 export default function OwnerDashboard() {
   return (
     <main className="min-h-screen bg-slate-950 px-6 py-16 text-white">
@@ -11,6 +14,21 @@ export default function OwnerDashboard() {
             métricas futuras.
           </p>
         </header>
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur">
+          <h2 className="mb-4 text-lg font-semibold text-white">¿Aún no has registrado tu local?</h2>
+          <p className="mb-4 text-sm text-slate-300">
+            Completa el formulario de registro para que tu establecimiento aparezca en Seki y puedas
+            comenzar a recibir reservas.
+          </p>
+          <Link
+            href="/places/new"
+            className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950"
+          >
+            <Building2 className="h-4 w-4" />
+            Registrar mi local ahora
+          </Link>
+        </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <article className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur">
