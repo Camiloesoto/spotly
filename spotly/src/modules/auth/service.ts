@@ -18,6 +18,66 @@ const USE_MOCK_DATA =
   process.env.NEXT_PUBLIC_API_URL === "http://localhost:3333/api/v1" ||
   process.env.NODE_ENV === "development";
 
+// Helper para verificar si Prisma está disponible
+async function getPrisma() {
+  try {
+    const { prisma } = await import("@/lib/prisma");
+    return prisma;
+  } catch (error) {
+    return null;
+  }
+}
+
+// Helper para mapear UserRole de Prisma a string
+async function mapPrismaRoleToRole(role: any): Promise<"user" | "owner" | "admin"> {
+  try {
+    // @ts-ignore - Prisma puede no estar instalado
+    const prismaModule = await import("@prisma/client");
+    if (prismaModule?.UserRole) {
+      const PrismaUserRole = prismaModule.UserRole;
+      switch (role) {
+        case PrismaUserRole.ADMIN:
+          return "admin";
+        case PrismaUserRole.OWNER:
+          return "owner";
+        case PrismaUserRole.USER:
+        default:
+          return "user";
+      }
+    }
+  } catch {
+    // Fallback si Prisma no está disponible
+  }
+  // Fallback por valor
+  if (role === "ADMIN" || role === "admin") return "admin";
+  if (role === "OWNER" || role === "owner") return "owner";
+  return "user";
+}
+
+// Helper para mapear string a UserRole de Prisma
+async function mapRoleToPrismaRole(role: "user" | "owner" | "admin"): Promise<any> {
+  try {
+    // @ts-ignore - Prisma puede no estar instalado
+    const prismaModule = await import("@prisma/client");
+    if (prismaModule?.UserRole) {
+      const PrismaUserRole = prismaModule.UserRole;
+      switch (role) {
+        case "admin":
+          return PrismaUserRole.ADMIN;
+        case "owner":
+          return PrismaUserRole.OWNER;
+        case "user":
+        default:
+          return PrismaUserRole.USER;
+      }
+    }
+  } catch {
+    // Fallback si Prisma no está disponible
+  }
+  // Fallback por valor
+  return role.toUpperCase();
+}
+
 // Simular usuarios en memoria (solo para desarrollo)
 const MOCK_USERS: Array<{
   email: string;
@@ -103,6 +163,52 @@ function createMockSession(user: { email: string; fullName: string; role: "user"
 }
 
 export async function registerUser(payload: RegisterPayload) {
+  // Intentar usar Prisma primero (si está disponible y no estamos en modo mock)
+  const prisma = await getPrisma();
+  if (prisma && !USE_MOCK_DATA) {
+    try {
+      // Verificar si el usuario ya existe
+      const existingUser = await prisma.user.findUnique({
+        where: { email: payload.email },
+      });
+
+      if (existingUser) {
+        throw new Error("Este correo electrónico ya está registrado");
+      }
+
+      // Crear nuevo usuario
+      const role = await mapRoleToPrismaRole(payload.role);
+      const newUser = await prisma.user.create({
+        data: {
+          email: payload.email,
+          password: payload.password, // En producción esto debe estar hasheado (bcrypt)
+          name: payload.fullName,
+          role,
+        },
+      });
+
+      const mappedRole = await mapPrismaRoleToRole(newUser.role);
+      const session: Session = {
+        accessToken: `token_${newUser.id}_${Date.now()}`,
+        refreshToken: `refresh_${newUser.id}_${Date.now()}`,
+        expiresIn: 3600,
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          fullName: newUser.name,
+          role: mappedRole,
+          avatarUrl: newUser.avatarUrl || undefined,
+        },
+      };
+
+      useAuthStore.getState().setSession(mapSessionToStore(session.user), session.accessToken);
+      return session;
+    } catch (error) {
+      // Si hay error de Prisma, fallar al mock data o API
+      console.error("Error usando Prisma, fallando a mock data:", error);
+    }
+  }
+
   if (USE_MOCK_DATA) {
     // Simular delay de red
     await new Promise((resolve) => setTimeout(resolve, 800));
@@ -171,6 +277,41 @@ export async function registerLocal(payload: LocalRegisterPayload): Promise<Loca
 }
 
 export async function login(payload: LoginPayload) {
+  // Intentar usar Prisma primero (si está disponible y no estamos en modo mock)
+  const prisma = await getPrisma();
+  if (prisma && !USE_MOCK_DATA) {
+    try {
+      // Buscar usuario
+      const user = await prisma.user.findUnique({
+        where: { email: payload.email },
+      });
+
+      if (!user || user.password !== payload.password) {
+        throw new Error("Credenciales inválidas. Verifica tu correo y contraseña.");
+      }
+
+      const mappedRole = await mapPrismaRoleToRole(user.role);
+      const session: Session = {
+        accessToken: `token_${user.id}_${Date.now()}`,
+        refreshToken: `refresh_${user.id}_${Date.now()}`,
+        expiresIn: 3600,
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.name,
+          role: mappedRole,
+          avatarUrl: user.avatarUrl || undefined,
+        },
+      };
+
+      useAuthStore.getState().setSession(mapSessionToStore(session.user), session.accessToken);
+      return session;
+    } catch (error) {
+      // Si hay error de Prisma, fallar al mock data o API
+      console.error("Error usando Prisma, fallando a mock data:", error);
+    }
+  }
+
   if (USE_MOCK_DATA) {
     // Simular delay de red
     await new Promise((resolve) => setTimeout(resolve, 600));
@@ -240,12 +381,62 @@ function mapSessionToStore(sessionUser: Session["user"]) {
  * Crea un usuario owner desde una solicitud pre-aprobada
  * En producción, esto generaría un token de activación y enviaría un email
  */
-export function createOwnerFromRequest(request: {
+export async function createOwnerFromRequest(request: {
   contactEmail: string;
   contactName: string;
   contactPhone: string;
-}): { userId: string; activationToken: string } {
-  // Verificar si el usuario ya existe
+}): Promise<{ userId: string; activationToken: string }> {
+  // Intentar usar Prisma primero (si está disponible y no estamos en modo mock)
+  const prisma = await getPrisma();
+  if (prisma && !USE_MOCK_DATA) {
+    try {
+      // Verificar si el usuario ya existe
+      const existingUser = await prisma.user.findUnique({
+        where: { email: request.contactEmail },
+      });
+
+      if (existingUser) {
+        // Si ya existe, retornar su ID (no crear duplicado)
+        const activationToken = `activation_${existingUser.id}_${Date.now()}`;
+        return {
+          userId: existingUser.id,
+          activationToken,
+        };
+      }
+
+      // Crear nuevo usuario owner
+      // @ts-ignore - Prisma puede no estar instalado
+      const prismaModule = await import("@prisma/client");
+      const ownerRole = prismaModule?.UserRole?.OWNER || "OWNER";
+      const newUser = await prisma.user.create({
+        data: {
+          email: request.contactEmail,
+          password: "temp_password", // El usuario deberá definir su contraseña al activar
+          name: request.contactName,
+          phone: request.contactPhone,
+          role: ownerRole,
+        },
+      });
+
+      // Generar token de activación (mock)
+      const activationToken = `activation_${newUser.id}_${Date.now()}`;
+
+      // En producción, aquí se enviaría un email con el token
+      console.log(`[PRISMA] Email de activación enviado a ${request.contactEmail}`);
+      console.log(`[PRISMA] Token de activación: ${activationToken}`);
+      console.log(`[PRISMA] Link de activación: /auth/activate?token=${activationToken}`);
+
+      return {
+        userId: newUser.id,
+        activationToken,
+      };
+    } catch (error) {
+      // Si hay error de Prisma, fallar al mock data
+      console.error("Error usando Prisma, fallando a mock data:", error);
+    }
+  }
+
+  // Fallback a mock data
   const existingUser = MOCK_USERS.find((u) => u.email === request.contactEmail);
   if (existingUser) {
     // Si ya existe, retornar su ID (no crear duplicado)

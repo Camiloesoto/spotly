@@ -89,7 +89,7 @@ export async function reviewRestaurantRequest(
     // Si se pre-aprueba, crear el usuario owner automáticamente
     if (payload.status === "pre_approved" && !request.ownerUserId) {
       const { createOwnerFromRequest } = await import("@/modules/auth/service");
-      const { userId } = createOwnerFromRequest({
+      const { userId } = await createOwnerFromRequest({
         contactEmail: request.contactEmail,
         contactName: request.contactName,
         contactPhone: request.contactPhone,
