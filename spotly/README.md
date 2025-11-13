@@ -57,11 +57,11 @@ Este repositorio contiene el **frontend web** construido con:
 
 ### Sprint 3 – Reservas y perfil del usuario cliente
 
-- ⏳ HU-U08 – Crear una reserva
-- ⏳ HU-U09 – Ver mis reservas activas
-- ⏳ HU-U10 – Cancelar una reserva
-- ⏳ HU-U11 – Ver estado y confirmación de mi reserva
-- ⏳ HU-U12 – Editar mi perfil
+- ✅ HU-U08 – Crear una reserva
+- ✅ HU-U09 – Ver mis reservas activas
+- ✅ HU-U10 – Cancelar una reserva
+- ✅ HU-U11 – Ver estado y confirmación de mi reserva
+- ✅ HU-U12 – Editar mi perfil
 
 ### Sprint 4 – Flujo restaurante: cuenta, perfil y reservas
 
