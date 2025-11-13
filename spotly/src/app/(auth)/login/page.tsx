@@ -249,14 +249,14 @@ function redirectByRole(
   // Si no, redirigir según el rol
   const role = session.user.role;
   if (role === "owner") {
-    router.push("/dashboard/owner");
+    router.push("/owner");
     return;
   }
   if (role === "admin") {
-    router.push("/dashboard/admin");
+    router.push("/admin");
     return;
   }
-  router.push("/dashboard/user");
+  router.push("/user");
 }
 
 type FieldErrorProps = {

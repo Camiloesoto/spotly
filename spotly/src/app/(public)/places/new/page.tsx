@@ -153,7 +153,7 @@ export default function RegisterLocalPage() {
       };
 
       await registerLocalMutation.mutateAsync(payload);
-      router.push("/dashboard/owner");
+      router.push("/owner");
     } catch (error) {
       setServerError(
         error instanceof Error ? error.message : "Error al registrar el local. Intenta nuevamente."

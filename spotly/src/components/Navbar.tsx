@@ -46,10 +46,10 @@ export function Navbar() {
               <Link
                 href={
                   user.role === "admin"
-                    ? "/dashboard/admin"
+                    ? "/admin"
                     : user.role === "owner"
-                      ? "/dashboard/owner"
-                      : "/dashboard/user"
+                      ? "/owner"
+                      : "/user"
                 }
                 className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
               >

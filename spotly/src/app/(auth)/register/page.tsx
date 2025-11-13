@@ -83,7 +83,7 @@ export default function RegisterPage() {
     try {
       await registerMutation.mutateAsync(payload);
       setIsSuccess(true);
-      const nextPath = payload.role === "owner" ? "/dashboard/owner" : "/dashboard/user";
+      const nextPath = payload.role === "owner" ? "/owner" : "/user";
       setTimeout(() => router.push(nextPath), 900);
     } catch (error) {
       const message =
