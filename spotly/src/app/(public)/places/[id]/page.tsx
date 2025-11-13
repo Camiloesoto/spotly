@@ -20,6 +20,7 @@ import { useParams } from "next/navigation";
 import { usePlaceQuery } from "@/modules/places/hooks";
 import type { PlaceCategory, PriceRange } from "@/modules/places/types";
 import { useAuthStore } from "@/lib/store/auth-store";
+import { BookingForm } from "@/components/BookingForm";
 
 const DAYS_LABELS: Record<string, string> = {
   monday: "Lunes",
@@ -188,24 +189,11 @@ export default function PlaceDetailPage() {
           <aside className="space-y-6">
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               {user ? (
-                <>
-                  <button
-                    type="button"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled
-                    title="Funcionalidad de reservas próximamente"
-                  >
-                    <Calendar className="h-5 w-5" />
-                    Reservar mesa
-                  </button>
-                  <p className="mt-2 text-xs text-slate-500 text-center">
-                    Próximamente disponible
-                  </p>
-                </>
+                <BookingForm placeId={placeId} placeName={place.name} />
               ) : (
                 <>
                   <Link
-                    href="/login?redirect=/places"
+                    href={`/login?redirect=/places/${placeId}`}
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2"
                   >
                     <Calendar className="h-5 w-5" />
