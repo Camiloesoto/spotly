@@ -26,7 +26,7 @@ export async function getUserProfile(): Promise<UserProfile> {
       email: user.email,
       phone: undefined,
       avatarUrl: user.avatarUrl,
-      role: user.role,
+      role: user.role === "guest" ? "user" : user.role,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -62,7 +62,7 @@ export async function updateUserProfile(
       email: updatedUser.email,
       phone: payload.phone,
       avatarUrl: updatedUser.avatarUrl,
-      role: user.role,
+      role: user.role === "guest" ? "user" : user.role,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
