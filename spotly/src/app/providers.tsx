@@ -11,13 +11,11 @@ type AppProvidersProps = {
 
 export function AppProviders({ children }: AppProvidersProps) {
   const [queryClient] = useState(() => new QueryClient());
-  const [isHydrated, setIsHydrated] = useState(false);
   useSyncSessionToken();
 
   // Hidratar el store de autenticación solo en el cliente
   useEffect(() => {
     useAuthStore.persist.rehydrate();
-    setIsHydrated(true);
   }, []);
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;

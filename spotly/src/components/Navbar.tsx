@@ -25,12 +25,14 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center gap-4">
-          <Link
-            href="/places"
-            className="text-sm font-medium text-slate-300 transition hover:text-white"
-          >
-            Lugares
-          </Link>
+          {status === "authenticated" && user && (
+            <Link
+              href="/places"
+              className="text-sm font-medium text-slate-300 transition hover:text-white"
+            >
+              Lugares
+            </Link>
+          )}
 
           {status === "authenticated" && user ? (
             <>

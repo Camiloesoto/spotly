@@ -14,11 +14,13 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useMemo } from "react";
+import { useAuthStore } from "@/lib/store/auth-store";
 
 import { usePlacesQuery } from "@/modules/places/hooks";
 import type { PlaceCategory, PriceRange } from "@/modules/places/types";
 
 export default function PlacesPage() {
+  const user = useAuthStore((state) => state.user);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<PlaceCategory | "all">("all");
   const [selectedPriceRange, setSelectedPriceRange] = useState<PriceRange | "all">("all");
@@ -37,12 +39,42 @@ export default function PlacesPage() {
   return (
     <main className="mx-auto min-h-screen w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-8 space-y-3">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Descubre lugares increíbles
-        </h1>
-        <p className="text-base text-slate-600 sm:text-lg">
-          Explora restaurantes, bares y discotecas cercanas. Encuentra tu próximo plan perfecto.
-        </p>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            Descubre lugares increíbles
+          </h1>
+          <p className="mt-2 text-base text-slate-600 sm:text-lg">
+            Explora restaurantes, bares y discotecas cercanas. Encuentra tu próximo plan perfecto.
+          </p>
+        </div>
+        {typeof window !== "undefined" && !user && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-amber-900">
+                  Estás navegando como invitado
+                </p>
+                <p className="mt-1 text-xs text-amber-700">
+                  Puedes explorar restaurantes, pero necesitas una cuenta para hacer reservas
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Link
+                  href="/login"
+                  className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-900 transition hover:bg-amber-100"
+                >
+                  Iniciar sesión
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-600"
+                >
+                  Crear cuenta
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
       <section className="mb-8 space-y-4">
