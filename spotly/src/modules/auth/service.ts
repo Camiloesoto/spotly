@@ -24,7 +24,16 @@ const MOCK_USERS: Array<{
   fullName: string;
   role: "user" | "owner" | "admin";
   id: string;
-}> = [];
+}> = [
+  // Usuario admin de prueba
+  {
+    id: "admin_001",
+    email: "admin@seki.com",
+    password: "admin123",
+    fullName: "Administrador Seki",
+    role: "admin",
+  },
+];
 
 function createMockSession(user: { email: string; fullName: string; role: "user" | "owner" | "admin"; id: string }): Session {
   return {

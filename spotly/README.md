@@ -48,7 +48,7 @@ Este repositorio contiene el **frontend web** construido con:
 - ✅ HU-U04 – Buscar restaurante por nombre o zona
 - ✅ HU-U05 – Filtrar restaurantes
 - ✅ HU-R00 – Solicitud de alta de restaurante (registro de local)
-- ⏳ HU-A01 – Login de administrador
+- ✅ HU-A01 – Login de administrador
 
 ### Sprint 2 – Explorar restaurantes (lado cliente)
 
@@ -165,11 +165,13 @@ npm run lint
 **Sprint 2:**
 - ✅ **HU-U07** – Ver ficha de restaurante (commit: `feat: implement place detail page`)
 
+**Sprint 1 (completado):**
+- ✅ **HU-A01** – Login de administrador (commit: `feat: implement admin login and dashboard`)
+
 ### ⏳ En Desarrollo
 
-- Panel de administración (HU-A01)
 - Sistema de reservas (Sprint 3)
-- Ficha detallada de restaurantes (HU-U07)
+- Mapa de restaurantes (HU-U06)
 
 ---
 
