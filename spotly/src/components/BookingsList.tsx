@@ -1,8 +1,9 @@
 "use client";
 
-import { Calendar, Clock, MapPin, Users, CheckCircle2, XCircle, Loader2, AlertCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, CheckCircle2, XCircle, Loader2, AlertCircle, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useBookingsQuery } from "@/modules/bookings/hooks";
+import { useState } from "react";
+import { useBookingsQuery, useCancelBookingMutation } from "@/modules/bookings/hooks";
 import type { BookingStatus } from "@/modules/bookings/types";
 
 type BookingsListProps = {
@@ -116,35 +117,100 @@ export function BookingsList({ showActiveOnly = false }: BookingsListProps) {
     });
   };
 
-  const BookingCard = ({ booking }: { booking: typeof bookings[0] }) => (
-    <Link
-      href={`/bookings/${booking.id}`}
-      className="block rounded-lg border border-slate-200 bg-white p-4 transition hover:border-emerald-300 hover:shadow-md"
-    >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <h3 className="font-semibold text-slate-900">{booking.placeName}</h3>
-            {getStatusBadge(booking.status)}
+  const handleCancel = async (bookingId: string) => {
+    setCancellingId(bookingId);
+    try {
+      await cancelBookingMutation.mutateAsync(bookingId);
+      setShowCancelConfirm(null);
+    } catch (error) {
+      console.error("Error al cancelar reserva:", error);
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
+  const canCancel = (status: BookingStatus) => {
+    return status === "pending" || status === "confirmed";
+  };
+
+  const BookingCard = ({ booking }: { booking: typeof bookings[0] }) => {
+    const isCancelling = cancellingId === booking.id;
+    const showConfirm = showCancelConfirm === booking.id;
+
+    return (
+      <div className="group relative rounded-lg border border-slate-200 bg-white p-4 transition hover:border-emerald-300 hover:shadow-md">
+        <Link href={`/bookings/${booking.id}`} className="block">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="font-semibold text-slate-900">{booking.placeName}</h3>
+                {getStatusBadge(booking.status)}
+              </div>
+              <div className="space-y-1.5 text-sm text-slate-600">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-slate-400" />
+                  <span>{formatDate(booking.date)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-slate-400" />
+                  <span>{booking.time}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-slate-400" />
+                  <span>{booking.numberOfGuests} {booking.numberOfGuests === 1 ? "persona" : "personas"}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="space-y-1.5 text-sm text-slate-600">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-slate-400" />
-              <span>{formatDate(booking.date)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-slate-400" />
-              <span>{booking.time}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-slate-400" />
-              <span>{booking.numberOfGuests} {booking.numberOfGuests === 1 ? "persona" : "personas"}</span>
-            </div>
+        </Link>
+        
+        {canCancel(booking.status) && (
+          <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-3">
+            {showConfirm ? (
+              <>
+                <p className="flex-1 text-xs text-slate-600">¿Cancelar esta reserva?</p>
+                <button
+                  type="button"
+                  onClick={() => setShowCancelConfirm(null)}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                  disabled={isCancelling}
+                >
+                  No
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCancel(booking.id)}
+                  disabled={isCancelling}
+                  className="rounded-lg bg-red-500 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-red-600 disabled:opacity-50"
+                >
+                  {isCancelling ? (
+                    <>
+                      <Loader2 className="inline h-3 w-3 animate-spin" />
+                      Cancelando...
+                    </>
+                  ) : (
+                    "Sí, cancelar"
+                  )}
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowCancelConfirm(booking.id);
+                }}
+                className="ml-auto flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-100"
+              >
+                <Trash2 className="h-3 w-3" />
+                Cancelar
+              </button>
+            )}
           </div>
-        </div>
+        )}
       </div>
-    </Link>
-  );
+    );
+  };
 
   return (
     <div className="space-y-6">
