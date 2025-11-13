@@ -1,0 +1,171 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Usuarios del sistema
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // En producción, esto debe estar hasheado
+  name      String
+  role      UserRole @default(USER)
+  avatarUrl String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  bookings        Booking[]
+  restaurantRequest RestaurantRequest? @relation("RequestOwner")
+  reviews         Review[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  OWNER
+  ADMIN
+}
+
+// Solicitudes de restaurantes
+model RestaurantRequest {
+  id        String                  @id @default(cuid())
+  status    RestaurantRequestStatus  @default(PENDING_REVIEW)
+  
+  // Datos del local
+  name            String
+  description     String
+  address         String
+  city            String
+  country         String
+  phone           String
+  categories      String[] // Array de categorías
+  priceRange      PriceRange
+  musicStyles     String[] // Array de estilos musicales
+  schedule        Json // Array de horarios: [{day, opensAt, closesAt}]
+  
+  // Datos del contacto
+  contactName     String
+  contactEmail    String
+  contactPhone    String
+  
+  // Metadata
+  submittedAt     DateTime @default(now())
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  rejectionReason String?
+  
+  // Relación con usuario owner (si ya fue creado)
+  ownerUserId     String?  @unique
+  owner           User?     @relation("RequestOwner", fields: [ownerUserId], references: [id])
+  
+  @@map("restaurant_requests")
+}
+
+enum RestaurantRequestStatus {
+  PENDING_REVIEW
+  PRE_APPROVED
+  REJECTED
+  IN_REVIEW
+  PUBLISHED
+  CHANGES_REQUESTED
+  SUSPENDED
+}
+
+enum PriceRange {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+// Lugares/Restaurantes publicados
+model Place {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  address     String
+  city        String
+  country     String
+  phone       String
+  latitude    Float?
+  longitude   Float?
+  categories  String[] // Array de categorías
+  priceRange  PriceRange
+  musicStyles String[] // Array de estilos musicales
+  schedule    Json     // Array de horarios
+  coverImageUrl String?
+  rating      Float?   @default(0)
+  distanceInKm Float?
+  
+  // Relación con owner
+  ownerId     String
+  owner       User     @relation("PlaceOwner", fields: [ownerId], references: [id])
+  
+  // Relaciones
+  bookings    Booking[]
+  reviews     Review[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("places")
+}
+
+// Reservas
+model Booking {
+  id            String        @id @default(cuid())
+  placeId       String
+  place         Place         @relation(fields: [placeId], references: [id])
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  
+  // Datos de la reserva
+  date          DateTime
+  time          String        // Formato HH:MM
+  numberOfGuests Int
+  specialRequests String?
+  
+  status        BookingStatus @default(PENDING)
+  placeName    String         // Cache del nombre del lugar
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  REJECTED
+}
+
+// Reseñas (para el futuro)
+model Review {
+  id        String   @id @default(cuid())
+  placeId   String
+  place     Place    @relation(fields: [placeId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  rating    Int      // 1-5
+  comment   String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([placeId, userId]) // Un usuario solo puede dejar una reseña por lugar
+  @@map("reviews")
+}
+
