@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Spotly",
+  title: "Seki",
   description:
-    "Descubre, reserva y preordena en tus restaurantes, bares y discotecas favoritas.",
+    "Encuentra dónde ir y qué reservar según tu plan: restaurante, bar o discoteca. Reserva, pre-ordena y divide la cuenta con tus amigos.",
 };
 
 export default function RootLayout({

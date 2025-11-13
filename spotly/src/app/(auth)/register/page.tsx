@@ -117,7 +117,7 @@ export default function RegisterPage() {
         <section className="flex flex-col justify-between">
           <div>
             <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-300">
-              nuevo en spotly
+              nuevo en Seki
             </span>
             <h1 className="mt-6 text-4xl font-semibold tracking-tight md:text-5xl">
               Crea tu cuenta y guarda tus planes favoritos
@@ -148,7 +148,7 @@ export default function RegisterPage() {
             <Link href="/legal/terminos" className="text-emerald-300 underline-offset-4 hover:underline">
               Términos & Condiciones
             </Link>{" "}
-            de Spotly.
+            de Seki.
           </p>
         </section>
 
@@ -227,7 +227,7 @@ export default function RegisterPage() {
             </div>
 
             <fieldset className="space-y-3">
-              <legend className="text-sm font-medium text-white">¿Cómo usarás Spotly?</legend>
+              <legend className="text-sm font-medium text-white">¿Cómo usarás Seki?</legend>
               <div className="grid gap-3 sm:grid-cols-2">
                 <RoleOption
                   id="role-user"

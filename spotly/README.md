@@ -1,60 +1,99 @@
-## Spotly
+# Seki
 
-Plataforma de reservas y preorden para restaurantes, bares y discotecas.
+Plataforma para descubrir restaurantes, bares y discotecas, hacer reservas, pre-ordenar y dividir cuentas.
 
-Este repositorio contiene el frontend web construido con Next.js 14 (app router), TypeScript y Tailwind CSS. El objetivo es entregar incrementos quincenales alineados a las historias de usuario descritas en los sprints iniciales.
+## ¿Qué es Seki?
+
+Seki es una app que te ayuda a encontrar dónde ir y qué reservar según el plan que tengas en mente: restaurante, bar o discoteca. El usuario abre Seki, pone: zona, presupuesto, tipo de música/ambiente y con quién va (pareja, amigos, after office, etc.), y la app le muestra los lugares ideales, con info en tiempo casi real: aforo aproximado, ambiente, promos, eventos, menú y reseñas. Desde ahí mismo puede reservar mesa, pre-ordenar (para que la comida/bebida esté lista al llegar) y dividir la cuenta con sus amigos.
+
+### Factor diferencial
+
+- **Enfoque en la experiencia del plan**, no solo en la reserva
+- **Personalización real** con datos del usuario
+- **Pre-orden y cuenta inteligente**
+- **Un solo ecosistema para el local**: reservas + mesas + pedidos + data en un panel sencillo
+- **Insights accionables** para los dueños
 
 ---
 
-## Visión Técnica
+## Arquitectura
 
-- **Frontend:** Next.js (app router) + Tailwind CSS + Zustand + React Query + Axios/fetch.
-- **Backend (proyectado):** NestJS + PostgreSQL + Prisma ORM + JWT (access/refresh).
-- **Infraestructura:** Docker, Railway/Render/Fly.io, GitHub Actions.
-- **Buenas prácticas:** TypeScript en todo lado, arquitectura en capas, validaciones en bordes, tests con Jest.
+Este repositorio contiene el **frontend web** construido con:
+
+- **Framework:** Next.js 14 (app router)
+- **Lenguaje:** TypeScript
+- **Estilos:** Tailwind CSS
+- **Estado remoto:** React Query
+- **Estado global:** Zustand
+- **HTTP Client:** Axios
+- **Validación:** Zod + react-hook-form
+
+### Backend (proyectado)
+
+- **Framework:** NestJS
+- **Base de datos:** PostgreSQL
+- **ORM:** Prisma
+- **Autenticación:** JWT (access + refresh tokens)
+- **API:** REST
 
 ---
 
 ## Roadmap por Sprints
 
-### Sprint 1 – Fundaciones
-- S1-1 Registro de usuarios (email o Google).
-- S1-2 Inicio de sesión.
-- S1-3 Listado de lugares cercanos.
-- S1-4 Búsqueda por nombre.
-- S1-5 Registro de local.
-- S1-6 Edición de perfil de local.
-- S1-7 Aprobación de locales (admin).
+### Sprint 1 – Base + autenticación + solicitud de restaurantes
 
-### Sprint 2 – Reservas
-- S2-1 Ficha de lugar (detalles completos).
-- S2-2 Reseñas y calificaciones.
-- S2-3 Crear reserva.
-- S2-4 Estado de reserva.
-- S2-5 Cancelar reserva.
-- S2-6 Panel de reservas del local.
-- S2-7 Aceptar o rechazar reservas.
+- ✅ HU-U01 – Registro de usuario cliente
+- ✅ HU-U02 – Login de usuario cliente
+- ✅ HU-U03 – Ver lista de restaurantes cercanos
+- ✅ HU-U04 – Buscar restaurante por nombre o zona
+- ✅ HU-U05 – Filtrar restaurantes
+- ✅ HU-R00 – Solicitud de alta de restaurante (registro de local)
+- ⏳ HU-A01 – Login de administrador
 
-### Sprint 3 – Experiencia de usuario
-- S3-1 Edición de perfil de usuario.
-- S3-2 Filtro por tipo de plan.
-- S3-3 Filtro por rango de precio.
-- S3-4 Guardar favoritos.
-- S3-5 Gestión de favoritos.
-- S3-6 Notificaciones de reserva.
+### Sprint 2 – Explorar restaurantes (lado cliente)
 
-### Sprint 4 – Versión avanzada
-- S4-1 Gestión de menú del local.
-- S4-2 Ver menú del lugar.
-- S4-3 Preorden al reservar.
-- S4-4 Estado de la preorden.
-- S4-5 Historial de reservas y pedidos (local).
-- S4-6 Moderación de cuentas (admin).
-- S4-7 Métricas de la plataforma (admin).
+- ⏳ HU-U06 – Ver restaurantes en un mapa
+- ⏳ HU-U07 – Ver ficha de restaurante
+
+### Sprint 3 – Reservas y perfil del usuario cliente
+
+- ⏳ HU-U08 – Crear una reserva
+- ⏳ HU-U09 – Ver mis reservas activas
+- ⏳ HU-U10 – Cancelar una reserva
+- ⏳ HU-U11 – Ver estado y confirmación de mi reserva
+- ⏳ HU-U12 – Editar mi perfil
+
+### Sprint 4 – Flujo restaurante: cuenta, perfil y reservas
+
+- ⏳ HU-A03 – Revisar solicitudes de restaurantes
+- ⏳ HU-A04 – Crear cuenta de restaurante desde una solicitud aprobada
+- ⏳ HU-R01 – Activar cuenta de restaurante y definir contraseña
+- ⏳ HU-R02 – Login de usuario restaurante
+- ⏳ HU-R03 – Completar perfil del restaurante y enviarlo a revisión
+- ⏳ HU-R04 – Configurar capacidad y horarios de reservas
+- ⏳ HU-R05 – Ver reservas del día
+- ⏳ HU-R06 – Cambiar el estado de las reservas
+- ⏳ HU-R07 – Bloquear horarios específicos
+
+### Sprint 5 – Publicación, control y métricas (lado admin)
+
+- ⏳ HU-A05 – Aprobar y publicar restaurantes
+- ⏳ HU-A06 – Ver listado de restaurantes y su estado
+- ⏳ HU-A07 – Suspender o reactivar restaurantes / usuarios
+- ⏳ HU-A02 – Ver listado de usuarios cliente
+- ⏳ HU-A08 – Ver métricas básicas de uso
+
+### Sprint 6 – Valor diferencial y experiencia
+
+- ⏳ HU-U13 – Guardar restaurantes como favoritos
+- ⏳ HU-U14 – Ver nivel de ocupación estimado
+- ⏳ HU-U15 – Dejar reseña y calificación
+- ⏳ HU-R08 – Ver feedback y reseñas de clientes
+- ⏳ HU-A09 – Moderar reseñas
 
 ---
 
-## Estructura Inicial (objetivo)
+## Estructura del Proyecto
 
 ```
 src/
@@ -66,40 +105,74 @@ src/
       page.tsx         # landing
       places/
         page.tsx       # listado
+        new/           # registro de local
     (dashboard)/
       owner/
       admin/
       user/
   modules/
-    auth/
-    places/
-    bookings/
-    profiles/
+    auth/              # autenticación
+    places/            # lugares/restaurantes
+    bookings/          # reservas
+    profiles/          # perfiles
   lib/
-    api/
-    auth/
-    store/
+    api/               # cliente HTTP
+    auth/              # utilidades de auth
+    store/             # estado global (Zustand)
+    utils/             # utilidades generales
 ```
-
-La implementación se irá completando iterativamente. Cada módulo incluirá hooks, servicios, tipos y tests específicos.
 
 ---
 
-## Scripts útiles
+## Scripts
 
 ```bash
-# iniciar en desarrollo
+# Desarrollo
 npm run dev
 
-# lint
+# Build
+npm run build
+
+# Lint
 npm run lint
 ```
 
 ---
 
-## Próximos pasos inmediatos
+## Tecnologías y Buenas Prácticas
 
-1. Configurar carpetas base (`src/modules`, `src/app/(auth|dashboard|public)`).
-2. Definir contrato de API interno (`src/lib/api/client.ts`).
-3. Implementar flujo mínimo de autenticación (mock + UI) para Sprint 1.
-4. Integrar estado global (Zustand) y React Query.
+- **TypeScript** en todo el código
+- **Arquitectura en capas** (controllers → services → repositories)
+- **Validación en bordes** (Zod para DTOs)
+- **ESLint + Prettier** para estilo de código
+- **Git flow** con ramas por feature
+- **Tests** con Jest (en desarrollo)
+
+---
+
+## Estado Actual
+
+### ✅ Historias Completadas
+
+**Sprint 1:**
+- ✅ **HU-U01** – Registro de usuario cliente (commit: `feat: implement user registration flow`)
+- ✅ **HU-U02** – Login de usuario cliente (commit: `feat: deliver optimized login experience`)
+- ✅ **HU-U03** – Ver lista de restaurantes cercanos (commit: `feat: implement places listing with search and filters`)
+- ✅ **HU-U04** – Buscar restaurante por nombre o zona (commit: `feat: implement places listing with search and filters`)
+- ✅ **HU-U05** – Filtrar restaurantes (commit: `feat: implement places listing with search and filters`)
+- ✅ **HU-R00** – Solicitud de alta de restaurante (commit: `feat: implement local registration form`)
+
+### ⏳ En Desarrollo
+
+- Panel de administración (HU-A01)
+- Sistema de reservas (Sprint 3)
+- Ficha detallada de restaurantes (HU-U07)
+
+---
+
+## Próximos Pasos
+
+1. Implementar ficha detallada de restaurante (HU-U07)
+2. Sistema de reservas completo (Sprint 3)
+3. Panel de administración para restaurantes
+4. Panel de administración para admins

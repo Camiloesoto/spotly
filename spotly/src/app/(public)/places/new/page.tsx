@@ -184,7 +184,7 @@ export default function RegisterLocalPage() {
           Registra tu local
         </h1>
         <p className="text-base text-slate-600 sm:text-lg">
-          Completa la información de tu establecimiento para aparecer en Spotly y recibir reservas.
+          Completa la información de tu establecimiento para aparecer en Seki y recibir reservas.
         </p>
       </header>
 

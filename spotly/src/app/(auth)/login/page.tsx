@@ -78,7 +78,7 @@ export default function LoginPage() {
         <section className="flex flex-col justify-between">
           <div>
             <span className="inline-flex items-center rounded-full bg-sky-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-sky-200">
-              vuelve a spotly
+              vuelve a Seki
             </span>
             <h1 className="mt-6 text-4xl font-semibold tracking-tight md:text-5xl">
               Accede a tus reservas en segundos
@@ -116,7 +116,7 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 autoComplete="email"
-                placeholder="tu-email@spotly.com"
+                placeholder="tu-email@seki.com"
                 className="w-full rounded-lg border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none transition hover:border-sky-400/40 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/30"
                 {...register("email")}
                 disabled={disableForm}

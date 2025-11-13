@@ -3,14 +3,13 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-6 py-24 text-white">
       <section className="max-w-3xl text-center">
         <span className="rounded-full bg-white/10 px-4 py-1 text-sm font-medium uppercase tracking-wide text-slate-200">
-          Plataforma Spotly
+          Plataforma Seki
         </span>
         <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">
-          Reserva, preordena y descubre los mejores planes nocturnos de tu ciudad.
+          Encuentra dónde ir según el plan que tengas en mente
         </h1>
         <p className="mt-6 text-lg text-slate-300">
-          Spotly conecta usuarios con restaurantes, bares y discotecas. Encuentra lugares,
-          guarda tus favoritos y gestiona reservas en un solo lugar.
+          Seki te ayuda a encontrar restaurantes, bares y discotecas ideales según zona, presupuesto, tipo de música y con quién vas. Reserva, pre-ordena y divide la cuenta con tus amigos.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <a
