@@ -50,14 +50,18 @@ export default function AdminRequestsPage() {
   const reviewMutation = useReviewRestaurantRequestMutation();
 
   const handleApprove = async (requestId: string) => {
-    if (!confirm("¿Estás seguro de que deseas pre-aprobar esta solicitud?")) {
+    if (!confirm("¿Estás seguro de que deseas pre-aprobar esta solicitud?\n\nSe creará automáticamente una cuenta de usuario para el dueño del restaurante.")) {
       return;
     }
     try {
-      await reviewMutation.mutateAsync({
+      const updated = await reviewMutation.mutateAsync({
         id: requestId,
         payload: { status: "pre_approved" },
       });
+      
+      if (updated.ownerUserId) {
+        alert(`Solicitud pre-aprobada exitosamente.\n\nSe ha creado una cuenta de usuario (ID: ${updated.ownerUserId}). El dueño recibirá un email con instrucciones para activar su cuenta.`);
+      }
     } catch (error) {
       console.error("Error al aprobar solicitud:", error);
       alert("Error al aprobar la solicitud. Intenta nuevamente.");
@@ -256,6 +260,16 @@ export default function AdminRequestsPage() {
                             <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3">
                               <p className="text-xs font-medium text-red-900 mb-1">Razón del rechazo:</p>
                               <p className="text-sm text-red-700">{request.rejectionReason}</p>
+                            </div>
+                          )}
+
+                          {request.ownerUserId && (
+                            <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+                              <p className="text-xs font-medium text-emerald-900 mb-1">Cuenta creada:</p>
+                              <p className="text-sm text-emerald-700">
+                                Se ha creado una cuenta de usuario para este restaurante. El dueño recibirá un email con instrucciones para activar su cuenta.
+                              </p>
+                              <p className="text-xs text-emerald-600 mt-1">ID de usuario: {request.ownerUserId}</p>
                             </div>
                           )}
 

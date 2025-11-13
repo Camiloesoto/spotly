@@ -124,7 +124,8 @@ export function updateMockRequestStatus(
   id: string,
   status: RestaurantRequestStatus,
   reviewedBy?: string,
-  rejectionReason?: string
+  rejectionReason?: string,
+  ownerUserId?: string
 ): RestaurantRequest | undefined {
   const request = MOCK_RESTAURANT_REQUESTS.find((req) => req.id === id);
   if (request) {
@@ -135,6 +136,9 @@ export function updateMockRequestStatus(
     }
     if (rejectionReason) {
       request.rejectionReason = rejectionReason;
+    }
+    if (ownerUserId) {
+      request.ownerUserId = ownerUserId;
     }
   }
   return request;

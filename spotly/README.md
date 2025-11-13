@@ -66,7 +66,7 @@ Este repositorio contiene el **frontend web** construido con:
 ### Sprint 4 – Flujo restaurante: cuenta, perfil y reservas
 
 - ✅ HU-A03 – Revisar solicitudes de restaurantes
-- ⏳ HU-A04 – Crear cuenta de restaurante desde una solicitud aprobada
+- ✅ HU-A04 – Crear cuenta de restaurante desde una solicitud aprobada
 - ⏳ HU-R01 – Activar cuenta de restaurante y definir contraseña
 - ⏳ HU-R02 – Login de usuario restaurante
 - ⏳ HU-R03 – Completar perfil del restaurante y enviarlo a revisión

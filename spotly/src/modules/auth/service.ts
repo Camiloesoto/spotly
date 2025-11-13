@@ -236,3 +236,47 @@ function mapSessionToStore(sessionUser: Session["user"]) {
   };
 }
 
+/**
+ * Crea un usuario owner desde una solicitud pre-aprobada
+ * En producción, esto generaría un token de activación y enviaría un email
+ */
+export function createOwnerFromRequest(request: {
+  contactEmail: string;
+  contactName: string;
+  contactPhone: string;
+}): { userId: string; activationToken: string } {
+  // Verificar si el usuario ya existe
+  const existingUser = MOCK_USERS.find((u) => u.email === request.contactEmail);
+  if (existingUser) {
+    // Si ya existe, retornar su ID (no crear duplicado)
+    return {
+      userId: existingUser.id,
+      activationToken: `mock_activation_${existingUser.id}_${Date.now()}`,
+    };
+  }
+
+  // Crear nuevo usuario owner
+  const newUser = {
+    id: `owner_${Date.now()}`,
+    email: request.contactEmail,
+    password: "temp_password", // El usuario deberá definir su contraseña al activar
+    fullName: request.contactName,
+    role: "owner" as const,
+  };
+
+  MOCK_USERS.push(newUser);
+
+  // Generar token de activación (mock)
+  const activationToken = `mock_activation_${newUser.id}_${Date.now()}`;
+
+  // En producción, aquí se enviaría un email con el token
+  console.log(`[MOCK] Email de activación enviado a ${request.contactEmail}`);
+  console.log(`[MOCK] Token de activación: ${activationToken}`);
+  console.log(`[MOCK] Link de activación: /auth/activate?token=${activationToken}`);
+
+  return {
+    userId: newUser.id,
+    activationToken,
+  };
+}
+

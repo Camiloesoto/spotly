@@ -78,15 +78,35 @@ export async function reviewRestaurantRequest(
   if (USE_MOCK_DATA) {
     await new Promise((resolve) => setTimeout(resolve, 600));
 
+    // Obtener la solicitud antes de actualizarla
+    const request = getMockRequestById(id);
+    if (!request) {
+      throw new Error("Solicitud no encontrada");
+    }
+
+    let ownerUserId: string | undefined;
+
+    // Si se pre-aprueba, crear el usuario owner automáticamente
+    if (payload.status === "pre_approved" && !request.ownerUserId) {
+      const { createOwnerFromRequest } = await import("@/modules/auth/service");
+      const { userId } = createOwnerFromRequest({
+        contactEmail: request.contactEmail,
+        contactName: request.contactName,
+        contactPhone: request.contactPhone,
+      });
+      ownerUserId = userId;
+    }
+
     const updated = updateMockRequestStatus(
       id,
       payload.status,
       "admin_001", // En producción vendría del token JWT
-      payload.rejectionReason
+      payload.rejectionReason,
+      ownerUserId
     );
 
     if (!updated) {
-      throw new Error("Solicitud no encontrada");
+      throw new Error("Error al actualizar la solicitud");
     }
 
     return updated;
