@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api/client";
-import type { PlaceFilters, PlaceListResponse, PlaceSummary } from "./types";
+import type { PlaceDetail, PlaceFilters, PlaceListResponse, PlaceSummary } from "./types";
 
 const PLACES_BASE = "/places";
 
@@ -10,7 +10,7 @@ export async function listPlaces(filters: PlaceFilters = {}) {
 }
 
 export async function getPlaceById(id: string) {
-  return apiClient.get<PlaceSummary>(`${PLACES_BASE}/${id}`);
+  return apiClient.get<PlaceDetail>(`${PLACES_BASE}/${id}`);
 }
 
 export async function searchPlacesByName(name: string) {

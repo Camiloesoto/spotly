@@ -34,3 +34,19 @@ export type PlaceListResponse = {
   pageSize: number;
 };
 
+export type PlaceDetail = PlaceSummary & {
+  phone?: string;
+  website?: string;
+  schedule?: Array<{
+    day: string;
+    opensAt: string;
+    closesAt: string;
+    isClosed?: boolean;
+  }>;
+  gallery?: string[];
+  amenities?: string[];
+  averageTicket?: number;
+  capacity?: number;
+  reviewCount?: number;
+};
+

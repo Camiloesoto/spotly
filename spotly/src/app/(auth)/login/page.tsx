@@ -14,7 +14,7 @@ import type { Session } from "@/modules/auth/types";
 const loginSchema = z.object({
   email: z.string().trim().email("Ingresa un correo válido"),
   password: z.string().min(1, "Ingresa tu contraseña"),
-  remember: z.boolean().default(false),
+  remember: z.boolean(),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
