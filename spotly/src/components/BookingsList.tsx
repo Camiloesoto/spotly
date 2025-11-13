@@ -12,6 +12,9 @@ type BookingsListProps = {
 
 export function BookingsList({ showActiveOnly = false }: BookingsListProps) {
   const { data, isLoading, isError, error } = useBookingsQuery();
+  const cancelBookingMutation = useCancelBookingMutation();
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [showCancelConfirm, setShowCancelConfirm] = useState<string | null>(null);
 
   if (isLoading) {
     return (
