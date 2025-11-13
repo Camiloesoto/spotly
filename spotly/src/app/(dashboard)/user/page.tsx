@@ -117,10 +117,13 @@ export default function UserDashboard() {
                   </p>
                   <p className="text-sm font-medium text-slate-900">{user.email}</p>
                 </div>
-                <button className="mt-4 w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 flex items-center justify-center gap-2">
+                <Link
+                  href="/user/profile"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
                   <Settings className="h-4 w-4" />
                   Editar perfil
-                </button>
+                </Link>
               </div>
             </section>
 
