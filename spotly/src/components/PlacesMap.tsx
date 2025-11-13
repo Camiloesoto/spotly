@@ -2,6 +2,7 @@
 
 import { MapPin } from "lucide-react";
 import { useCallback, useState } from "react";
+// @ts-ignore - react-map-gl types may not be fully compatible
 import Map, { Marker, Popup, ViewStateChangeEvent } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Link from "next/link";

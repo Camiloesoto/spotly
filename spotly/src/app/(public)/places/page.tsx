@@ -15,21 +15,38 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAuthStore } from "@/lib/store/auth-store";
 
 import { usePlacesQuery } from "@/modules/places/hooks";
 import type { PlaceCategory, PriceRange } from "@/modules/places/types";
-import { PlacesMap } from "@/components/PlacesMap";
+import dynamic from "next/dynamic";
+
+const PlacesMap = dynamic(() => import("@/components/PlacesMap").then((mod) => ({ default: mod.PlacesMap })), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[600px] items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
+      <div className="text-center">
+        <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
+        <p className="text-sm text-slate-600">Cargando mapa...</p>
+      </div>
+    </div>
+  ),
+});
 
 type ViewMode = "list" | "map";
 
 export default function PlacesPage() {
   const user = useAuthStore((state) => state.user);
+  const [isMounted, setIsMounted] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<PlaceCategory | "all">("all");
   const [selectedPriceRange, setSelectedPriceRange] = useState<PriceRange | "all">("all");
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const filters = useMemo(
     () => ({
@@ -53,7 +70,7 @@ export default function PlacesPage() {
             Explora restaurantes, bares y discotecas cercanas. Encuentra tu próximo plan perfecto.
           </p>
         </div>
-        {typeof window !== "undefined" && !user && (
+        {isMounted && !user && (
           <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
             <div className="flex items-start gap-3">
               <div className="flex-1">
@@ -167,26 +184,7 @@ export default function PlacesPage() {
 
       {!isLoading && !isError && data && data.data.length > 0 && viewMode === "map" && (
         <div className="mb-8">
-          {process.env.NEXT_PUBLIC_MAPBOX_TOKEN ? (
-            <PlacesMap places={data.data} />
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-amber-200 bg-amber-50 p-8">
-              <Map className="h-12 w-12 text-amber-600" />
-              <div className="text-center">
-                <p className="font-semibold text-amber-900">Mapa no disponible</p>
-                <p className="mt-1 text-sm text-amber-700">
-                  Para habilitar el mapa, configura NEXT_PUBLIC_MAPBOX_TOKEN en tu archivo .env.local
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("list")}
-                  className="mt-4 rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-700"
-                >
-                  Ver lista
-                </button>
-              </div>
-            </div>
-          )}
+          <PlacesMap places={data.data} />
         </div>
       )}
 
