@@ -5,7 +5,8 @@
 ✅ **Esquema de base de datos creado** (`prisma/schema.prisma`)
 ✅ **Cliente Prisma configurado** (`src/lib/prisma.ts`)
 ✅ **Script de seed creado** (`prisma/seed.ts`)
-⏳ **Pendiente**: Instalar dependencias y migrar servicios
+✅ **Servicios migrados a Prisma** (con fallback a mock data)
+⏳ **Pendiente**: Instalar dependencias y configurar base de datos
 
 ## Próximos Pasos
 
@@ -45,14 +46,16 @@ npm run db:push
 npm run db:seed
 ```
 
-### 3. Migrar Servicios
+### 3. Verificar que todo funcione
 
-Los siguientes servicios necesitan migrarse de mock data a Prisma:
+Los siguientes servicios ya están migrados y funcionarán automáticamente con Prisma cuando la DB esté configurada:
 
-- [ ] `src/modules/auth/service.ts`
-- [ ] `src/modules/restaurant-requests/service.ts`
-- [ ] `src/modules/places/service.ts`
-- [ ] `src/modules/bookings/service.ts`
+- ✅ `src/modules/auth/service.ts` - Registro, login, creación de owners
+- ✅ `src/modules/restaurant-requests/service.ts` - CRUD de solicitudes
+- ✅ `src/modules/places/service.ts` - Listado y detalle de lugares
+- ✅ `src/modules/bookings/service.ts` - Crear, listar, cancelar reservas
+
+**Nota**: Todos los servicios tienen fallback a mock data, así que la app funcionará incluso sin Prisma instalado.
 
 ## Estructura de la Base de Datos
 
