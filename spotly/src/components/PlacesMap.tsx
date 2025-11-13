@@ -56,7 +56,7 @@ export function PlacesMap({ places, initialViewState }: PlacesMapProps) {
   // Calcular centro del mapa basado en los lugares
   const calculateCenter = () => {
     if (places.length === 0) {
-      return { lat: 4.6097, lng: -74.0817 }; // Default: Bogotá
+      return { lat: 6.2476, lng: -75.5658 }; // Default: Medellín
     }
 
     const avgLat = places.reduce((sum, p) => sum + p.latitude, 0) / places.length;
