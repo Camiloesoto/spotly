@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/auth-store";
+import { BookingsList } from "@/components/BookingsList";
 
 export default function UserDashboard() {
   const router = useRouter();
@@ -68,19 +69,7 @@ export default function UserDashboard() {
                   Mis reservas
                 </h2>
               </div>
-              <div className="rounded-lg border border-slate-100 bg-slate-50 p-8 text-center">
-                <Calendar className="mx-auto h-12 w-12 text-slate-400 mb-3" />
-                <p className="text-sm font-medium text-slate-900 mb-1">No tienes reservas</p>
-                <p className="text-sm text-slate-600 mb-4">
-                  Cuando hagas una reserva, aparecerá aquí
-                </p>
-                <Link
-                  href="/places"
-                  className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
-                >
-                  Explorar restaurantes
-                </Link>
-              </div>
+              <BookingsList showActiveOnly={false} />
             </section>
 
             {/* Favoritos */}
