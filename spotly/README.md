@@ -52,7 +52,7 @@ Este repositorio contiene el **frontend web** construido con:
 
 ### Sprint 2 – Explorar restaurantes (lado cliente)
 
-- ⏳ HU-U06 – Ver restaurantes en un mapa
+- ✅ HU-U06 – Ver restaurantes en un mapa
 - ✅ HU-U07 – Ver ficha de restaurante
 
 ### Sprint 3 – Reservas y perfil del usuario cliente
@@ -163,6 +163,7 @@ npm run lint
 - ✅ **HU-R00** – Solicitud de alta de restaurante (commit: `feat: implement local registration form`)
 
 **Sprint 2:**
+- ✅ **HU-U06** – Ver restaurantes en un mapa (commit: `feat: implement map view for places`)
 - ✅ **HU-U07** – Ver ficha de restaurante (commit: `feat: implement place detail page`)
 
 **Sprint 1 (completado):**

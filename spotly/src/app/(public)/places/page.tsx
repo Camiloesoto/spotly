@@ -10,6 +10,8 @@ import {
   UtensilsCrossed,
   Music,
   Beer,
+  Map,
+  List,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,9 +20,13 @@ import { useAuthStore } from "@/lib/store/auth-store";
 
 import { usePlacesQuery } from "@/modules/places/hooks";
 import type { PlaceCategory, PriceRange } from "@/modules/places/types";
+import { PlacesMap } from "@/components/PlacesMap";
+
+type ViewMode = "list" | "map";
 
 export default function PlacesPage() {
   const user = useAuthStore((state) => state.user);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<PlaceCategory | "all">("all");
   const [selectedPriceRange, setSelectedPriceRange] = useState<PriceRange | "all">("all");
@@ -78,15 +84,43 @@ export default function PlacesPage() {
       </header>
 
       <section className="mb-8 space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Buscar por nombre..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2"
-          />
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Buscar por nombre..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2"
+            />
+          </div>
+          <div className="flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition ${
+                viewMode === "list"
+                  ? "bg-emerald-500 text-white"
+                  : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              <List className="h-4 w-4" />
+              Lista
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("map")}
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition ${
+                viewMode === "map"
+                  ? "bg-emerald-500 text-white"
+                  : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              <Map className="h-4 w-4" />
+              Mapa
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-3">
@@ -131,7 +165,32 @@ export default function PlacesPage() {
         </div>
       )}
 
-      {!isLoading && !isError && data && data.data.length > 0 && (
+      {!isLoading && !isError && data && data.data.length > 0 && viewMode === "map" && (
+        <div className="mb-8">
+          {process.env.NEXT_PUBLIC_MAPBOX_TOKEN ? (
+            <PlacesMap places={data.data} />
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-amber-200 bg-amber-50 p-8">
+              <Map className="h-12 w-12 text-amber-600" />
+              <div className="text-center">
+                <p className="font-semibold text-amber-900">Mapa no disponible</p>
+                <p className="mt-1 text-sm text-amber-700">
+                  Para habilitar el mapa, configura NEXT_PUBLIC_MAPBOX_TOKEN en tu archivo .env.local
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className="mt-4 rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-700"
+                >
+                  Ver lista
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!isLoading && !isError && data && data.data.length > 0 && viewMode === "list" && (
         <>
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-slate-600">
