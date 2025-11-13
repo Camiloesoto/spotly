@@ -34,6 +34,58 @@ const MOCK_USERS: Array<{
     fullName: "Administrador Seki",
     role: "admin",
   },
+  // Usuarios regulares de prueba
+  {
+    id: "user_001",
+    email: "usuario@seki.com",
+    password: "usuario123",
+    fullName: "Juan Pérez",
+    role: "user",
+  },
+  {
+    id: "user_002",
+    email: "maria@seki.com",
+    password: "maria123",
+    fullName: "María Rodríguez",
+    role: "user",
+  },
+  {
+    id: "user_003",
+    email: "carlos@seki.com",
+    password: "carlos123",
+    fullName: "Carlos Martínez",
+    role: "user",
+  },
+  // Usuarios owner (coinciden con solicitudes existentes)
+  {
+    id: "owner_001",
+    email: "maria.gonzalez@terraza.com",
+    password: "owner123",
+    fullName: "María González",
+    role: "owner",
+  },
+  {
+    id: "owner_002",
+    email: "carlos.ramirez@rincon.com",
+    password: "owner123",
+    fullName: "Carlos Ramírez",
+    role: "owner",
+  },
+  {
+    id: "owner_003",
+    email: "andres.lopez@neon.com",
+    password: "owner123",
+    fullName: "Andrés López",
+    role: "owner",
+  },
+  // Usuario owner sin solicitud (para probar el flujo completo)
+  {
+    id: "owner_004",
+    email: "nuevo.owner@seki.com",
+    password: "owner123",
+    fullName: "Nuevo Owner",
+    role: "owner",
+  },
 ];
 
 function createMockSession(user: { email: string; fullName: string; role: "user" | "owner" | "admin"; id: string }): Session {
