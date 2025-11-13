@@ -13,7 +13,7 @@ import { useAuthStore } from "@/lib/store/auth-store";
 const profileSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   email: z.string().email("Ingresa un correo válido"),
-  phone: z.string().optional(),
+  phone: z.string().min(1, "El teléfono es obligatorio"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -60,7 +60,7 @@ export default function EditProfilePage() {
       await updateProfileMutation.mutateAsync({
         name: values.name,
         email: values.email,
-        phone: values.phone || undefined,
+        phone: values.phone,
       });
       router.push("/user");
     } catch (error) {
@@ -140,7 +140,7 @@ export default function EditProfilePage() {
           <div>
             <label htmlFor="phone" className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
               <Phone className="h-4 w-4 text-slate-500" />
-              Teléfono (opcional)
+              Teléfono
             </label>
             <input
               type="tel"

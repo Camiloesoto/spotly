@@ -24,7 +24,7 @@ export async function getUserProfile(): Promise<UserProfile> {
       id: user.id,
       name: user.name,
       email: user.email,
-      phone: undefined,
+      phone: "", // Por defecto vacío, el usuario debe completarlo
       avatarUrl: user.avatarUrl,
       role: user.role === "guest" ? "user" : user.role,
       createdAt: new Date().toISOString(),
