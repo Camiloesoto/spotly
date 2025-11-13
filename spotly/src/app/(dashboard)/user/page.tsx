@@ -2,7 +2,7 @@
 
 import { Calendar, Heart, MapPin, Search, User } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/auth-store";
 
@@ -10,16 +10,22 @@ export default function UserDashboard() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const status = useAuthStore((state) => state.status);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Solo verificar autenticación después de que el componente se monte (cliente)
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Proteger la ruta: solo usuarios autenticados pueden acceder
   useEffect(() => {
-    if (status === "idle" || (status !== "loading" && !user)) {
+    if (isMounted && (status === "idle" || !user)) {
       router.push("/login?redirect=/user");
     }
-  }, [status, user, router]);
+  }, [isMounted, status, user, router]);
 
-  // Mostrar loading mientras se verifica la autenticación
-  if (status === "loading" || !user) {
+  // Mostrar loading mientras se monta el componente o se verifica la autenticación
+  if (!isMounted || !user) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-white">
         <div className="text-center">
