@@ -2,6 +2,7 @@ import { apiClient } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/store/auth-store";
 import type {
   LocalRegisterPayload,
+  LocalRegisterResponse,
   LoginPayload,
   OAuthProvider,
   RegisterPayload,
@@ -80,24 +81,36 @@ export async function registerUser(payload: RegisterPayload) {
   return session;
 }
 
-export async function registerLocal(payload: LocalRegisterPayload) {
+export async function registerLocal(payload: LocalRegisterPayload): Promise<LocalRegisterResponse | Session> {
   if (USE_MOCK_DATA) {
     // Simular delay de red
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Crear usuario owner con el local
-    const newUser = {
-      id: `owner_${Date.now()}`,
-      email: `owner_${Date.now()}@seki.com`, // Email temporal
-      password: "temp_password",
-      fullName: payload.name,
-      role: "owner" as const,
-    };
+    // Crear una solicitud de restaurante en lugar de crear directamente el usuario
+    const { createRestaurantRequest } = await import("@/modules/restaurant-requests/service");
+    const request = await createRestaurantRequest({
+      name: payload.name,
+      description: payload.description,
+      address: payload.address,
+      city: payload.city,
+      country: payload.country,
+      phone: payload.phone,
+      categories: payload.categories,
+      priceRange: payload.priceRange,
+      musicStyles: payload.musicStyles,
+      schedule: payload.schedule,
+      contactName: payload.contactName,
+      contactEmail: payload.contactEmail,
+      contactPhone: payload.contactPhone,
+    });
 
-    MOCK_USERS.push(newUser);
-    const session = createMockSession(newUser);
-    useAuthStore.getState().setSession(mapSessionToStore(session.user), session.accessToken);
-    return session;
+    // Retornar un mensaje de éxito (no creamos sesión automáticamente)
+    // El usuario será notificado cuando su solicitud sea aprobada
+    return {
+      success: true,
+      message: "Solicitud enviada correctamente. Serás notificado cuando sea revisada.",
+      requestId: request.id,
+    };
   }
 
   const session = await apiClient.post<Session>(`${AUTH_BASE}/register/local`, payload);

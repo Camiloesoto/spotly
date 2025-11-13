@@ -41,5 +41,15 @@ export type LocalRegisterPayload = {
     opensAt: string;
     closesAt: string;
   }>;
+  // Datos de contacto del solicitante
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+};
+
+export type LocalRegisterResponse = {
+  success: boolean;
+  message: string;
+  requestId: string;
 };
 

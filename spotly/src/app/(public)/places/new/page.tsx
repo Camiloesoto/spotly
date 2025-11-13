@@ -12,6 +12,7 @@ import {
   Music,
   Phone,
   Tag,
+  Users,
   UtensilsCrossed,
 } from "lucide-react";
 import Link from "next/link";
@@ -81,6 +82,14 @@ const registerLocalSchema = z.object({
       })
     )
     .min(1, "Configura al menos un día de horario"),
+  // Datos de contacto
+  contactName: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres").max(100),
+  contactEmail: z.string().email("Ingresa un correo válido"),
+  contactPhone: z
+    .string()
+    .trim()
+    .regex(/^[\d\s\-\+\(\)]+$/, "Ingresa un teléfono válido")
+    .min(8, "El teléfono debe tener al menos 8 dígitos"),
 });
 
 type RegisterLocalFormValues = z.infer<typeof registerLocalSchema>;
@@ -122,6 +131,9 @@ export default function RegisterLocalPage() {
         opensAt: "09:00",
         closesAt: "22:00",
       })),
+      contactName: user?.name || "",
+      contactEmail: user?.email || "",
+      contactPhone: "",
     },
   });
 
@@ -150,13 +162,17 @@ export default function RegisterLocalPage() {
         priceRange: data.priceRange,
         musicStyles: data.musicStyles,
         schedule: data.schedule.filter((s) => s.opensAt && s.closesAt),
+        contactName: data.contactName,
+        contactEmail: data.contactEmail,
+        contactPhone: data.contactPhone,
       };
 
       await registerLocalMutation.mutateAsync(payload);
-      router.push("/owner");
+      // Redirigir a una página de confirmación o al dashboard del usuario
+      router.push("/user?request_sent=true");
     } catch (error) {
       setServerError(
-        error instanceof Error ? error.message : "Error al registrar el local. Intenta nuevamente."
+        error instanceof Error ? error.message : "Error al enviar la solicitud. Intenta nuevamente."
       );
     }
   });
@@ -191,10 +207,10 @@ export default function RegisterLocalPage() {
 
       <header className="mb-8 space-y-3">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Registra tu local
+          Solicita registrar tu local
         </h1>
         <p className="text-base text-slate-600 sm:text-lg">
-          Completa la información de tu establecimiento para aparecer en Seki y recibir reservas.
+          Completa la información de tu establecimiento. Tu solicitud será revisada y te notificaremos cuando sea aprobada.
         </p>
       </header>
 
@@ -436,6 +452,66 @@ export default function RegisterLocalPage() {
           </div>
         </section>
 
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-6 flex items-center gap-2 text-lg font-semibold text-slate-900">
+            <Users className="h-5 w-5 text-emerald-500" />
+            Datos de contacto
+          </h2>
+          <p className="mb-6 text-sm text-slate-600">
+            Esta información será usada para contactarte sobre tu solicitud y para crear tu cuenta cuando sea aprobada.
+          </p>
+
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label htmlFor="contactName" className="mb-2 block text-sm font-medium text-slate-700">
+                Nombre completo * 
+              </label>
+              <input
+                id="contactName"
+                type="text"
+                {...register("contactName")}
+                disabled={disableForm}
+                className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:bg-slate-50"
+                placeholder="Tu nombre completo"
+              />
+              {errors.contactName && <FieldError message={errors.contactName.message} />}
+            </div>
+
+            <div>
+              <label htmlFor="contactEmail" className="mb-2 block text-sm font-medium text-slate-700">
+                Correo electrónico * 
+              </label>
+              <input
+                id="contactEmail"
+                type="email"
+                {...register("contactEmail")}
+                disabled={disableForm}
+                className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:bg-slate-50"
+                placeholder="tu@email.com"
+              />
+              {errors.contactEmail && <FieldError message={errors.contactEmail.message} />}
+            </div>
+
+            <div>
+              <label htmlFor="contactPhone" className="mb-2 block text-sm font-medium text-slate-700">
+                Teléfono de contacto * 
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                <input
+                  id="contactPhone"
+                  type="tel"
+                  {...register("contactPhone")}
+                  disabled={disableForm}
+                  className="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 transition focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:bg-slate-50"
+                  placeholder="+57 300 123 4567"
+                />
+              </div>
+              {errors.contactPhone && <FieldError message={errors.contactPhone.message} />}
+            </div>
+          </div>
+        </section>
+
         {serverError && (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {serverError}
@@ -445,7 +521,7 @@ export default function RegisterLocalPage() {
         {registerLocalMutation.isSuccess && (
           <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
             <CheckCircle2 className="h-5 w-5" />
-            ¡Local registrado exitosamente! Redirigiendo...
+            ¡Solicitud enviada exitosamente! Serás notificado cuando sea revisada.
           </div>
         )}
 
@@ -464,11 +540,11 @@ export default function RegisterLocalPage() {
             {disableForm ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Registrando local...
+                Enviando solicitud...
               </>
             ) : (
               <>
-                Registrar local
+                Enviar solicitud
                 <ArrowRight className="h-4 w-4" />
               </>
             )}

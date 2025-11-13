@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, Building2, CheckCircle2, Clock, FileText, Shield, TrendingUp, Users } from "lucide-react";
+import { AlertCircle, ArrowRight, Building2, CheckCircle2, Clock, FileText, Shield, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -139,16 +139,22 @@ export default function AdminDashboard() {
                 </span>
               </div>
               <div className="space-y-3">
-                {/* Placeholder para solicitudes */}
-                <div className="rounded-lg border border-slate-100 bg-slate-50 p-6 text-center">
-                  <Building2 className="mx-auto h-12 w-12 text-slate-400 mb-3" />
-                  <p className="text-sm font-medium text-slate-900 mb-1">
-                    No hay solicitudes pendientes
-                  </p>
-                  <p className="text-sm text-slate-600">
-                    Las nuevas solicitudes de locales aparecerán aquí para revisión
-                  </p>
-                </div>
+                <Link
+                  href="/admin/requests"
+                  className="block rounded-lg border border-slate-200 bg-white p-4 transition hover:border-emerald-300 hover:bg-emerald-50"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">
+                        Ver todas las solicitudes
+                      </p>
+                      <p className="mt-1 text-xs text-slate-600">
+                        Revisa y gestiona las solicitudes de nuevos locales
+                      </p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-slate-400" />
+                  </div>
+                </Link>
               </div>
             </section>
 
@@ -202,6 +208,13 @@ export default function AdminDashboard() {
             <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-slate-900 mb-4">Acciones rápidas</h2>
               <div className="space-y-2">
+                <Link
+                  href="/admin/requests"
+                  className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                >
+                  <FileText className="h-5 w-5 text-slate-600" />
+                  Revisar solicitudes
+                </Link>
                 <Link
                   href="/admin/places"
                   className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100"

@@ -10,6 +10,7 @@ import {
 } from "./service";
 import type {
   LocalRegisterPayload,
+  LocalRegisterResponse,
   LoginPayload,
   OAuthProvider,
   RegisterPayload,
@@ -23,7 +24,7 @@ export function useRegisterUserMutation() {
 }
 
 export function useRegisterLocalMutation() {
-  return useMutation<Session, Error, LocalRegisterPayload>({
+  return useMutation<LocalRegisterResponse | Session, Error, LocalRegisterPayload>({
     mutationFn: registerLocal,
   });
 }
