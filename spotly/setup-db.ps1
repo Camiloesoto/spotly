@@ -33,7 +33,7 @@ if ($dbExists -match "1") {
 } else {
     $result = psql -U $dbUser -d postgres -c "CREATE DATABASE seki;" 2>&1
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "✓ Base de datos 'seki' creada exitosamente" -ForegroundColor Green
+        Write-Host "[OK] Base de datos 'seki' creada exitosamente" -ForegroundColor Green
     } else {
         Write-Host "Error al crear base de datos: $result" -ForegroundColor Red
         exit 1
@@ -51,15 +51,15 @@ NEXT_PUBLIC_USE_MOCK_DATA="false"
 NODE_ENV="development"
 "@
 
-$envContent | Out-File -FilePath ".env" -Encoding utf8 -NoNewline
-Write-Host "✓ Archivo .env creado" -ForegroundColor Green
+$envContent | Out-File -FilePath ".env" -Encoding utf8
+Write-Host "[OK] Archivo .env creado" -ForegroundColor Green
 
 # Paso 4: Crear tablas
 Write-Host ""
 Write-Host "Creando tablas en la base de datos..." -ForegroundColor Yellow
 npm run db:push
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "✓ Tablas creadas exitosamente" -ForegroundColor Green
+    Write-Host "[OK] Tablas creadas exitosamente" -ForegroundColor Green
 } else {
     Write-Host "Error al crear tablas" -ForegroundColor Red
     exit 1
@@ -72,7 +72,7 @@ if ($seed -eq "s" -or $seed -eq "S" -or $seed -eq "y" -or $seed -eq "Y") {
     Write-Host "Poblando base de datos..." -ForegroundColor Yellow
     npm run db:seed
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "✓ Datos de prueba insertados" -ForegroundColor Green
+        Write-Host "[OK] Datos de prueba insertados" -ForegroundColor Green
     }
 }
 
