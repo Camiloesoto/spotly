@@ -211,7 +211,8 @@ export async function createRestaurantRequest(
     try {
       // @ts-ignore - Prisma puede no estar instalado
       const prismaModule = await import("@prisma/client");
-      const statusEnum = prismaModule?.RestaurantRequestStatus?.PENDING_REVIEW || "PENDING_REVIEW";
+      const RestaurantRequestStatus = (prismaModule as any).RestaurantRequestStatus;
+      const statusEnum = RestaurantRequestStatus?.PENDING_REVIEW || "PENDING_REVIEW";
       const priceRangeEnum = mapPriceRangeToPrismaPriceRange(payload.priceRange);
 
       const newRequest = await prisma.restaurantRequest.create({
@@ -286,7 +287,8 @@ export async function reviewRestaurantRequest(
 
       // @ts-ignore - Prisma puede no estar instalado
       const prismaModule = await import("@prisma/client");
-      const statusEnum = prismaModule?.RestaurantRequestStatus?.[mapStatusToPrismaStatus(payload.status)] || mapStatusToPrismaStatus(payload.status);
+      const RestaurantRequestStatus = (prismaModule as any).RestaurantRequestStatus;
+      const statusEnum = RestaurantRequestStatus?.[mapStatusToPrismaStatus(payload.status)] || mapStatusToPrismaStatus(payload.status);
 
       const updated = await prisma.restaurantRequest.update({
         where: { id },

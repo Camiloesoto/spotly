@@ -105,7 +105,8 @@ export async function listPlaces(filters: PlaceFilters = {}) {
       if (filters.priceRange) {
         // @ts-ignore - Prisma puede no estar instalado
         const prismaModule = await import("@prisma/client");
-        const priceRangeEnum = prismaModule?.PriceRange?.[filters.priceRange.toUpperCase()] || filters.priceRange.toUpperCase();
+        const PriceRange = (prismaModule as any).PriceRange;
+        const priceRangeEnum = PriceRange?.[filters.priceRange.toUpperCase()] || filters.priceRange.toUpperCase();
         where.priceRange = priceRangeEnum;
       }
 
