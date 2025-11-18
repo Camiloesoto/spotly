@@ -33,14 +33,15 @@ async function mapPrismaRoleToRole(role: any): Promise<"user" | "owner" | "admin
   try {
     // @ts-ignore - Prisma puede no estar instalado
     const prismaModule = await import("@prisma/client");
-    if (prismaModule?.UserRole) {
-      const PrismaUserRole = prismaModule.UserRole;
+    // Los enums en Prisma se exportan como named exports
+    const UserRole = (prismaModule as any).UserRole;
+    if (UserRole) {
       switch (role) {
-        case PrismaUserRole.ADMIN:
+        case UserRole.ADMIN:
           return "admin";
-        case PrismaUserRole.OWNER:
+        case UserRole.OWNER:
           return "owner";
-        case PrismaUserRole.USER:
+        case UserRole.USER:
         default:
           return "user";
       }
@@ -59,16 +60,17 @@ async function mapRoleToPrismaRole(role: "user" | "owner" | "admin"): Promise<an
   try {
     // @ts-ignore - Prisma puede no estar instalado
     const prismaModule = await import("@prisma/client");
-    if (prismaModule?.UserRole) {
-      const PrismaUserRole = prismaModule.UserRole;
+    // Los enums en Prisma se exportan como named exports
+    const UserRole = (prismaModule as any).UserRole;
+    if (UserRole) {
       switch (role) {
         case "admin":
-          return PrismaUserRole.ADMIN;
+          return UserRole.ADMIN;
         case "owner":
-          return PrismaUserRole.OWNER;
+          return UserRole.OWNER;
         case "user":
         default:
-          return PrismaUserRole.USER;
+          return UserRole.USER;
       }
     }
   } catch {
@@ -407,7 +409,8 @@ export async function createOwnerFromRequest(request: {
       // Crear nuevo usuario owner
       // @ts-ignore - Prisma puede no estar instalado
       const prismaModule = await import("@prisma/client");
-      const ownerRole = prismaModule?.UserRole?.OWNER || "OWNER";
+      const UserRole = (prismaModule as any).UserRole;
+      const ownerRole = UserRole?.OWNER || "OWNER";
       const newUser = await prisma.user.create({
         data: {
           email: request.contactEmail,

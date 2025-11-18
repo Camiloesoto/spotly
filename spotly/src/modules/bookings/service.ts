@@ -112,7 +112,8 @@ export async function createBooking(payload: CreateBookingPayload): Promise<Book
 
       // @ts-ignore - Prisma puede no estar instalado
       const prismaModule = await import("@prisma/client");
-      const statusEnum = prismaModule?.BookingStatus?.PENDING || "PENDING";
+      const BookingStatus = (prismaModule as any).BookingStatus;
+      const statusEnum = BookingStatus?.PENDING || "PENDING";
 
       const newBooking = await prisma.booking.create({
         data: {
@@ -319,7 +320,8 @@ export async function cancelBooking(id: string): Promise<Booking> {
     try {
       // @ts-ignore - Prisma puede no estar instalado
       const prismaModule = await import("@prisma/client");
-      const statusEnum = prismaModule?.BookingStatus?.CANCELLED || "CANCELLED";
+      const BookingStatus = (prismaModule as any).BookingStatus;
+      const statusEnum = BookingStatus?.CANCELLED || "CANCELLED";
 
       const updated = await prisma.booking.update({
         where: { id },
