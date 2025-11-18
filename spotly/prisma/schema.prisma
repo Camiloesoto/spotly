@@ -25,6 +25,7 @@ model User {
   // Relaciones
   bookings        Booking[]
   restaurantRequest RestaurantRequest? @relation("RequestOwner")
+  places          Place[]              @relation("PlaceOwner")
   reviews         Review[]
 
   @@map("users")
