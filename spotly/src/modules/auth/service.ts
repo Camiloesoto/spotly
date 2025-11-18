@@ -21,8 +21,8 @@ const USE_MOCK_DATA =
 // Helper para verificar si Prisma está disponible
 async function getPrisma() {
   try {
-    const { prisma } = await import("@/lib/prisma");
-    return prisma;
+    const { getPrismaClient } = await import("@/lib/prisma");
+    return await getPrismaClient();
   } catch (error) {
     return null;
   }
