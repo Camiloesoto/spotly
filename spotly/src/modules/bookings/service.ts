@@ -3,8 +3,9 @@ import type {
   Booking,
   BookingDetail,
   BookingListResponse,
-  CreateBookingPayload,
   BookingStatus,
+  CreateBookingPayload,
+  UpdateBookingStatusPayload,
 } from "./types";
 import {
   addMockBooking,
@@ -313,6 +314,103 @@ export async function getBookingById(id: string): Promise<BookingDetail> {
   return apiClient.get<BookingDetail>(`${BOOKINGS_BASE}/${id}`);
 }
 
+export async function getBookingsByPlaceId(
+  placeId: string,
+  date?: string
+): Promise<BookingListResponse> {
+  // Intentar usar Prisma primero (si está disponible y no estamos en modo mock)
+  const prisma = await getPrisma();
+
+  if (prisma && !USE_MOCK_DATA) {
+    try {
+      const where: any = { placeId };
+
+      // Filtrar por fecha si se proporciona
+      if (date) {
+        const startOfDay = new Date(date);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        where.date = {
+          gte: startOfDay,
+          lte: endOfDay,
+        };
+      }
+
+      const prismaBookings = await prisma.booking.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true,
+            },
+          },
+          place: {
+            select: {
+              id: true,
+              name: true,
+              address: true,
+              phone: true,
+            },
+          },
+        },
+        orderBy: [
+          { date: "asc" },
+          { time: "asc" },
+        ],
+      });
+
+      const bookings = prismaBookings.map(mapPrismaBookingToBooking);
+
+      return {
+        data: bookings,
+        total: bookings.length,
+        page: 1,
+        pageSize: bookings.length,
+      };
+    } catch (error) {
+      console.error("Error usando Prisma, fallando a mock data:", error);
+    }
+  }
+
+  if (USE_MOCK_DATA) {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // En mock data, filtrar por placeId y fecha
+    const allBookings = getMockBookingsByUserId(""); // Obtener todas las reservas mock
+    let filteredBookings = allBookings.filter((b) => b.placeId === placeId);
+
+    if (date) {
+      filteredBookings = filteredBookings.filter((b) => b.date === date);
+    }
+
+    // Ordenar por fecha y hora
+    filteredBookings.sort((a, b) => {
+      const dateA = new Date(`${a.date}T${a.time}`);
+      const dateB = new Date(`${b.date}T${b.time}`);
+      return dateA.getTime() - dateB.getTime();
+    });
+
+    return {
+      data: filteredBookings,
+      total: filteredBookings.length,
+      page: 1,
+      pageSize: filteredBookings.length,
+    };
+  }
+
+  const params: any = { placeId };
+  if (date) {
+    params.date = date;
+  }
+
+  return apiClient.get<BookingListResponse>(`${BOOKINGS_BASE}/place/${placeId}`, { params });
+}
+
 export async function cancelBooking(id: string): Promise<Booking> {
   // Intentar usar Prisma primero (si está disponible y no estamos en modo mock)
   const prisma = await getPrisma();
@@ -359,5 +457,64 @@ export async function cancelBooking(id: string): Promise<Booking> {
   }
 
   return apiClient.patch<Booking>(`${BOOKINGS_BASE}/${id}/cancel`, {});
+}
+
+export async function updateBookingStatus(
+  id: string,
+  payload: UpdateBookingStatusPayload
+): Promise<Booking> {
+  // Intentar usar Prisma primero (si está disponible y no estamos en modo mock)
+  const prisma = await getPrisma();
+  if (prisma && !USE_MOCK_DATA) {
+    try {
+      // @ts-ignore - Prisma puede no estar instalado
+      const prismaModule = await import("@prisma/client");
+      const BookingStatus = (prismaModule as any).BookingStatus;
+      const statusEnum = BookingStatus?.[mapStatusToPrismaStatus(payload.status)] || mapStatusToPrismaStatus(payload.status);
+
+      const updated = await prisma.booking.update({
+        where: { id },
+        data: {
+          status: statusEnum,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true,
+            },
+          },
+          place: {
+            select: {
+              id: true,
+              name: true,
+              address: true,
+              phone: true,
+            },
+          },
+        },
+      });
+
+      return mapPrismaBookingToBooking(updated);
+    } catch (error) {
+      console.error("Error usando Prisma, fallando a mock data:", error);
+      throw error;
+    }
+  }
+
+  if (USE_MOCK_DATA) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const updated = updateMockBooking(id, { status: payload.status });
+    if (!updated) {
+      throw new Error("Reserva no encontrada");
+    }
+
+    return updated;
+  }
+
+  return apiClient.patch<Booking>(`${BOOKINGS_BASE}/${id}/status`, payload);
 }
 

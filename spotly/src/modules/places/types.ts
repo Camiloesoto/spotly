@@ -8,11 +8,11 @@ export type PlaceSummary = {
   description: string;
   city: string;
   address: string;
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
   category: PlaceCategory;
   priceRange: PriceRange;
-  rating: number;
+  rating?: number;
   coverImageUrl?: string;
   musicStyles: string[];
   distanceInKm?: number;
@@ -30,8 +30,8 @@ export type PlaceFilters = {
 export type PlaceListResponse = {
   data: PlaceSummary[];
   total: number;
-  page: number;
-  pageSize: number;
+  page?: number;
+  pageSize?: number;
 };
 
 export type PlaceDetail = PlaceSummary & {
@@ -50,3 +50,35 @@ export type PlaceDetail = PlaceSummary & {
   reviewCount?: number;
 };
 
+export type CreatePlacePayload = {
+  name: string;
+  description: string;
+  address: string;
+  city: string;
+  country: string;
+  phone: string;
+  latitude?: number;
+  longitude?: number;
+  categories: string[];
+  priceRange: PriceRange;
+  musicStyles: string[];
+  schedule: Array<{
+    day: string;
+    opensAt: string;
+    closesAt: string;
+  }>;
+  coverImageUrl?: string;
+  ownerId: string;
+};
+
+export type BookingScheduleItem = {
+  day: string;
+  opensAt: string;
+  closesAt: string;
+  isAvailable: boolean;
+};
+
+export type UpdatePlaceBookingConfigPayload = {
+  capacity?: number;
+  bookingSchedule?: BookingScheduleItem[];
+};

@@ -4,6 +4,9 @@ import type { Booking } from "./types";
 export const MOCK_BOOKINGS: Booking[] = [];
 
 export function getMockBookingsByUserId(userId: string): Booking[] {
+  if (!userId) {
+    return MOCK_BOOKINGS; // Si no hay userId, retornar todas
+  }
   return MOCK_BOOKINGS.filter((booking) => booking.userId === userId);
 }
 

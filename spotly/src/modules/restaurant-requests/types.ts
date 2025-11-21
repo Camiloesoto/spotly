@@ -37,7 +37,14 @@ export type RestaurantRequestListResponse = {
 };
 
 export type ReviewRestaurantRequestPayload = {
-  status: "pre_approved" | "rejected";
+  status: "pre_approved" | "rejected" | "in_review";
   rejectionReason?: string;
+};
+
+export type SubmitPlaceProfilePayload = {
+  requestId: string;
+  latitude?: number;
+  longitude?: number;
+  coverImageUrl?: string;
 };
 

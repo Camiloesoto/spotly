@@ -59,8 +59,15 @@ export function PlacesMap({ places, initialViewState }: PlacesMapProps) {
       return { lat: 6.2476, lng: -75.5658 }; // Default: Medellín
     }
 
-    const avgLat = places.reduce((sum, p) => sum + p.latitude, 0) / places.length;
-    const avgLng = places.reduce((sum, p) => sum + p.longitude, 0) / places.length;
+    // Filtrar lugares con coordenadas válidas
+    const placesWithCoords = places.filter((p) => p.latitude != null && p.longitude != null);
+    
+    if (placesWithCoords.length === 0) {
+      return { lat: 6.2476, lng: -75.5658 }; // Default: Medellín
+    }
+
+    const avgLat = placesWithCoords.reduce((sum, p) => sum + (p.latitude || 0), 0) / placesWithCoords.length;
+    const avgLng = placesWithCoords.reduce((sum, p) => sum + (p.longitude || 0), 0) / placesWithCoords.length;
 
     return { lat: avgLat, lng: avgLng };
   };
@@ -96,43 +103,45 @@ export function PlacesMap({ places, initialViewState }: PlacesMapProps) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {places.map((place) => (
-          <Marker key={place.id} position={[place.latitude, place.longitude]}>
-            <Popup>
-              <div className="w-64 p-2">
-                <Link
-                  href={`/places/${place.id}`}
-                  className="block rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition hover:shadow-md"
-                >
-                  {place.coverImageUrl && (
-                    <div className="relative mb-2 h-32 w-full overflow-hidden rounded-md">
-                      <img
-                        src={place.coverImageUrl}
-                        alt={place.name}
-                        className="h-full w-full object-cover"
-                      />
+        {places
+          .filter((place) => place.latitude != null && place.longitude != null)
+          .map((place) => (
+            <Marker key={place.id} position={[place.latitude!, place.longitude!]}>
+              <Popup>
+                <div className="w-64 p-2">
+                  <Link
+                    href={`/places/${place.id}`}
+                    className="block rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+                  >
+                    {place.coverImageUrl && (
+                      <div className="relative mb-2 h-32 w-full overflow-hidden rounded-md">
+                        <img
+                          src={place.coverImageUrl}
+                          alt={place.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <h3 className="font-semibold text-slate-900">{place.name}</h3>
+                    <p className="mt-1 text-xs text-slate-600 line-clamp-2">{place.description}</p>
+                    <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+                      <MapPin className="h-3 w-3" />
+                      <span className="line-clamp-1">{place.address}</span>
                     </div>
-                  )}
-                  <h3 className="font-semibold text-slate-900">{place.name}</h3>
-                  <p className="mt-1 text-xs text-slate-600 line-clamp-2">{place.description}</p>
-                  <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
-                    <MapPin className="h-3 w-3" />
-                    <span className="line-clamp-1">{place.address}</span>
-                  </div>
-                  <div className="mt-2 flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm font-medium text-slate-900">
-                        {place.rating.toFixed(1)}
-                      </span>
-                      <span className="text-xs text-slate-500">★</span>
+                    <div className="mt-2 flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-slate-900">
+                          {place.rating?.toFixed(1) ?? "N/A"}
+                        </span>
+                        <span className="text-xs text-slate-500">★</span>
+                      </div>
+                      <span className="text-xs text-slate-500">{place.city}</span>
                     </div>
-                    <span className="text-xs text-slate-500">{place.city}</span>
-                  </div>
-                </Link>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+                  </Link>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
       </MapContainer>
     </div>
   );

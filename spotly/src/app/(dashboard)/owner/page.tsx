@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { Building2, Clock, CheckCircle2, XCircle, AlertCircle, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store/auth-store";
 import { useRestaurantRequestsQuery } from "@/modules/restaurant-requests/hooks";
 import type { RestaurantRequestStatus } from "@/modules/restaurant-requests/types";
@@ -54,14 +54,45 @@ const STATUS_LABELS: Record<RestaurantRequestStatus, { label: string; descriptio
 };
 
 export default function OwnerDashboard() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-slate-950">
+          <div className="text-center">
+            <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
+            <p className="text-sm text-slate-300">Cargando...</p>
+          </div>
+        </main>
+      }
+    >
+      <OwnerDashboardContent />
+    </Suspense>
+  );
+}
+
+function OwnerDashboardContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const user = useAuthStore((state) => state.user);
   const status = useAuthStore((state) => state.status);
   const [isClient, setIsClient] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   // Obtener solicitudes del usuario (filtrar por su email)
   const { data: requestsData, isLoading: isLoadingRequests } = useRestaurantRequestsQuery();
   const userRequest = requestsData?.data.find((req) => req.contactEmail === user?.email);
+
+  // Mostrar mensaje de éxito si se envió el perfil
+  useEffect(() => {
+    if (searchParams.get("profile_submitted") === "true") {
+      setShowSuccessMessage(true);
+      // Limpiar el parámetro de la URL
+      router.replace("/owner", { scroll: false });
+      // Ocultar el mensaje después de 5 segundos
+      const timer = setTimeout(() => setShowSuccessMessage(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, router]);
 
   useEffect(() => {
     setIsClient(true);
@@ -110,6 +141,27 @@ export default function OwnerDashboard() {
             Desde aquí el dueño administrará su perfil, reservas entrantes, preórdenes y métricas futuras.
           </p>
         </header>
+
+        {/* Mensaje de éxito */}
+        {showSuccessMessage && (
+          <div className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 shadow-lg backdrop-blur">
+            <div className="flex items-start gap-4">
+              <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-emerald-400" />
+              <div className="flex-1">
+                <h2 className="mb-1 text-lg font-semibold text-white">Perfil enviado exitosamente</h2>
+                <p className="text-sm text-slate-300">
+                  Tu perfil ha sido enviado para revisión. Te notificaremos cuando sea publicado.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowSuccessMessage(false)}
+                className="text-slate-400 transition hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Estado de la solicitud o prompt para registrar */}
         {isLoadingRequests ? (
@@ -203,12 +255,20 @@ export default function OwnerDashboard() {
               el flujo de clientes (HU-R05, HU-R06).
             </p>
             {userRequest?.status === "published" && (
-              <Link
-                href="/owner/bookings"
-                className="mt-4 inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
-              >
-                Ver reservas
-              </Link>
+              <div className="mt-4 flex gap-3">
+                <Link
+                  href="/owner/settings"
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+                >
+                  Configurar reservas
+                </Link>
+                <Link
+                  href="/owner/bookings"
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+                >
+                  Ver reservas
+                </Link>
+              </div>
             )}
           </article>
         </div>

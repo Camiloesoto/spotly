@@ -69,10 +69,10 @@ Este repositorio contiene el **frontend web** construido con:
 - ✅ HU-A04 – Crear cuenta de restaurante desde una solicitud aprobada
 - ⏳ HU-R01 – Activar cuenta de restaurante y definir contraseña
 - ⏳ HU-R02 – Login de usuario restaurante
-- ⏳ HU-R03 – Completar perfil del restaurante y enviarlo a revisión
-- ⏳ HU-R04 – Configurar capacidad y horarios de reservas
-- ⏳ HU-R05 – Ver reservas del día
-- ⏳ HU-R06 – Cambiar el estado de las reservas
+- ✅ HU-R03 – Completar perfil del restaurante y enviarlo a revisión
+- ✅ HU-R04 – Configurar capacidad y horarios de reservas
+- ✅ HU-R05 – Ver reservas del día
+- ✅ HU-R06 – Cambiar el estado de las reservas
 - ⏳ HU-R07 – Bloquear horarios específicos
 
 ### Sprint 5 – Publicación, control y métricas (lado admin)

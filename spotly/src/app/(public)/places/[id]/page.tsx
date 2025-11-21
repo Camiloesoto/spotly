@@ -111,7 +111,7 @@ export default function PlaceDetailPage() {
           <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-              <span className="font-semibold">{place.rating.toFixed(1)}</span>
+              <span className="font-semibold">{place.rating?.toFixed(1) ?? "N/A"}</span>
               {place.reviewCount && (
                 <span className="text-white/80">({place.reviewCount} reseñas)</span>
               )}

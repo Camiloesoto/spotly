@@ -4,8 +4,9 @@ import {
   getRestaurantRequestById,
   listRestaurantRequests,
   reviewRestaurantRequest,
+  submitPlaceProfile,
 } from "./service";
-import type { ReviewRestaurantRequestPayload } from "./types";
+import type { ReviewRestaurantRequestPayload, SubmitPlaceProfilePayload } from "./types";
 
 export function useRestaurantRequestsQuery(status?: string) {
   return useQuery({
@@ -41,6 +42,18 @@ export function useReviewRestaurantRequestMutation() {
       reviewRestaurantRequest(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["restaurant-requests"] });
+    },
+  });
+}
+
+export function useSubmitPlaceProfileMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: SubmitPlaceProfilePayload) => submitPlaceProfile(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["restaurant-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["places"] });
     },
   });
 }

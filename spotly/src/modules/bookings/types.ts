@@ -38,3 +38,7 @@ export type BookingDetail = Booking & {
   cancellationReason?: string;
 };
 
+export type UpdateBookingStatusPayload = {
+  status: BookingStatus;
+};
+

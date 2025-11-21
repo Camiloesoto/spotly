@@ -4,6 +4,7 @@ import type {
   RestaurantRequestListResponse,
   ReviewRestaurantRequestPayload,
   RestaurantRequestStatus,
+  SubmitPlaceProfilePayload,
 } from "./types";
 import {
   MOCK_RESTAURANT_REQUESTS,
@@ -355,5 +356,132 @@ export async function reviewRestaurantRequest(
   }
 
   return await apiClient.patch<RestaurantRequest>(`${REQUESTS_BASE}/${id}/review`, payload);
+}
+
+export async function submitPlaceProfile(payload: SubmitPlaceProfilePayload): Promise<RestaurantRequest> {
+  // Intentar usar Prisma primero (si está disponible y no estamos en modo mock)
+  const prisma = await getPrisma();
+  if (prisma && !USE_MOCK_DATA) {
+    try {
+      // Obtener la solicitud
+      const request = await prisma.restaurantRequest.findUnique({
+        where: { id: payload.requestId },
+        include: {
+          owner: true,
+        },
+      });
+
+      if (!request) {
+        throw new Error("Solicitud no encontrada");
+      }
+
+      if (request.status !== "PRE_APPROVED") {
+        throw new Error("Solo se puede completar el perfil de solicitudes pre-aprobadas");
+      }
+
+      if (!request.ownerUserId) {
+        throw new Error("No se ha creado la cuenta de owner para esta solicitud");
+      }
+
+      // Crear el Place desde la solicitud
+      // @ts-ignore - Prisma puede no estar instalado
+      const prismaModule = await import("@prisma/client");
+      const PriceRange = (prismaModule as any).PriceRange;
+      const priceRangeEnum = PriceRange?.[request.priceRange] || request.priceRange;
+
+      const place = await prisma.place.create({
+        data: {
+          name: request.name,
+          description: request.description,
+          address: request.address,
+          city: request.city,
+          country: request.country,
+          phone: request.phone,
+          latitude: payload.latitude,
+          longitude: payload.longitude,
+          categories: request.categories,
+          priceRange: priceRangeEnum,
+          musicStyles: request.musicStyles,
+          schedule: request.schedule as any,
+          coverImageUrl: payload.coverImageUrl,
+          ownerId: request.ownerUserId,
+          rating: 0,
+        },
+      });
+
+      // Actualizar el estado de la solicitud a "in_review"
+      const RestaurantRequestStatus = (prismaModule as any).RestaurantRequestStatus;
+      const updated = await prisma.restaurantRequest.update({
+        where: { id: payload.requestId },
+        data: {
+          status: RestaurantRequestStatus?.IN_REVIEW || "IN_REVIEW",
+          reviewedAt: new Date(),
+        },
+        include: {
+          owner: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      return mapPrismaRequestToRequest(updated);
+    } catch (error) {
+      console.error("Error usando Prisma, fallando a mock data:", error);
+      throw error;
+    }
+  }
+
+  if (USE_MOCK_DATA) {
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    const request = getMockRequestById(payload.requestId);
+    if (!request) {
+      throw new Error("Solicitud no encontrada");
+    }
+
+    if (request.status !== "pre_approved") {
+      throw new Error("Solo se puede completar el perfil de solicitudes pre-aprobadas");
+    }
+
+    // Crear el Place usando el servicio de places
+    const { createPlace } = await import("@/modules/places/service");
+    await createPlace({
+      name: request.name,
+      description: request.description,
+      address: request.address,
+      city: request.city,
+      country: request.country,
+      phone: request.phone,
+      latitude: payload.latitude,
+      longitude: payload.longitude,
+      categories: request.categories,
+      priceRange: request.priceRange,
+      musicStyles: request.musicStyles,
+      schedule: request.schedule,
+      coverImageUrl: payload.coverImageUrl,
+      ownerId: request.ownerUserId || "",
+    });
+
+    // Actualizar el estado a "in_review"
+    const updated = updateMockRequestStatus(
+      payload.requestId,
+      "in_review",
+      "system",
+      undefined,
+      request.ownerUserId
+    );
+
+    if (!updated) {
+      throw new Error("Error al actualizar la solicitud");
+    }
+
+    return updated;
+  }
+
+  return await apiClient.post<RestaurantRequest>(`${REQUESTS_BASE}/${payload.requestId}/submit-profile`, payload);
 }
 

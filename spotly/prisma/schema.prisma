@@ -102,10 +102,14 @@ model Place {
   categories  String[] // Array de categorías
   priceRange  PriceRange
   musicStyles String[] // Array de estilos musicales
-  schedule    Json     // Array de horarios
+  schedule    Json     // Array de horarios generales: [{day, opensAt, closesAt}]
   coverImageUrl String?
   rating      Float?   @default(0)
   distanceInKm Float?
+  
+  // Configuración de reservas
+  capacity    Int?     // Capacidad máxima del local (número de personas)
+  bookingSchedule Json? // Horarios específicos para reservas: [{day, opensAt, closesAt, isAvailable}]
   
   // Relación con owner
   ownerId     String

@@ -19,7 +19,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useAuthStore } from "@/lib/store/auth-store";
 
 import { usePlacesQuery } from "@/modules/places/hooks";
-import type { PlaceCategory, PriceRange } from "@/modules/places/types";
+import type { PlaceCategory, PlaceSummary, PriceRange } from "@/modules/places/types";
 import dynamic from "next/dynamic";
 
 const PlacesMap = dynamic(() => import("@/components/PlacesMap").then((mod) => ({ default: mod.PlacesMap })), {
@@ -284,19 +284,7 @@ function PriceRangeFilter({ value, onChange }: PriceRangeFilterProps) {
 }
 
 type PlaceCardProps = {
-  place: {
-    id: string;
-    name: string;
-    description: string;
-    city: string;
-    address: string;
-    category: PlaceCategory;
-    priceRange: PriceRange;
-    rating: number;
-    coverImageUrl?: string;
-    musicStyles: string[];
-    distanceInKm?: number;
-  };
+  place: PlaceSummary;
 };
 
 function PlaceCard({ place }: PlaceCardProps) {
@@ -333,7 +321,7 @@ function PlaceCard({ place }: PlaceCardProps) {
         )}
         <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-xs font-semibold text-slate-900 backdrop-blur-sm">
           <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-          {place.rating.toFixed(1)}
+          {place.rating?.toFixed(1) ?? "N/A"}
         </div>
       </div>
 
@@ -343,7 +331,7 @@ function PlaceCard({ place }: PlaceCardProps) {
             {place.name}
           </h3>
           <span className="text-sm font-medium text-slate-600">
-            {priceRangeSymbols[place.priceRange]}
+            {priceRangeSymbols[place.priceRange as PriceRange]}
           </span>
         </div>
 
@@ -351,7 +339,7 @@ function PlaceCard({ place }: PlaceCardProps) {
 
         <div className="mt-auto flex flex-wrap items-center gap-2 text-xs text-slate-500">
           <span className="rounded-md bg-slate-100 px-2 py-1 font-medium">
-            {categoryLabels[place.category]}
+            {categoryLabels[place.category as PlaceCategory]}
           </span>
           {place.distanceInKm && (
             <span className="flex items-center gap-1">
